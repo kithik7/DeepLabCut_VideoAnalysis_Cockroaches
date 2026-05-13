@@ -1,0 +1,70 @@
+SuperAnimalConversionTables:
+  detector_batch_size: 1
+  detector_snapshotindex: -1
+Task: single_k7
+TrainingFraction:
+- 0.95
+alphavalue: 0.7
+batch_size: 8
+bodyparts:
+- left_antennae_tip
+- left_antennae_base
+- right_antennae_tip
+- right_antennae_base
+- left_pmthorax_boundary
+- right_pmthorax_boundary
+- body_end
+colormap: rainbow
+corner2move2:
+- 50
+- 50
+cropping: false 
+date: Sep2
+default_augmenter: default
+default_net_type: resnet_50
+dotsize: 12
+engine: pytorch
+identity: null
+iteration: 0
+model_type: resnet_pt
+move2corner: true
+multianimalproject: false
+numframes2pick: 20
+pcutoff: 0.6
+project_path: /rhomes/kkesavan/dlc_project
+scorer: ke
+shuffle: 1
+skeleton:
+- - left_antennae_tip
+  - left_antennae_base
+- - right_antennae_tip
+  - right_antennae_base
+- - left_antennae_base
+  - left_pmthorax_boundary
+- - right_antennae_base
+  - right_pmthorax_boundary
+- - left_pmthorax_boundary
+  - body_end
+- - right_pmthorax_boundary
+  - body_end
+skeleton_color: black
+snapshot_prefix: /rhomes/kkesavan/dlc_project/dlc-models-pytorch/iteration-0/single_k7Sep2-trainset95shuffle1/train/snapshot
+snapshotindex: 4
+start: 0
+stop: 1
+trainingFraction:
+- 0.95
+video_sets:
+  ? /rhomes/kkesavan/dlc_project/August_2025/Aug20_Iso_Nothing/Group1_solos/Basler_c00_acA2040-90um
+    (24827095)_20250820_120514304.mp4
+  : crop: 0, 640, 0, 480
+  ? /rhomes/kkesavan/dlc_project/August_2025/Aug20_Iso_Nothing/Group1_solos/Basler_c04_acA2040-90um
+    (24827095)_20250820_143759091.mp4
+  : crop: 0, 640, 0, 480
+  ? /rhomes/kkesavan/dlc_project/August_2025/Aug20_Iso_Nothing/Group2_group/Basler
+    acA2040-90um (24827095)_20250820_161513132.mp4
+  : crop: 0, 640, 0, 480
+x1: 0
+x2: 640
+y1: 277
+y2: 624

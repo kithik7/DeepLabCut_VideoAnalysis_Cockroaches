@@ -1,0 +1,11 @@
+
+# DeepLabCut Pose Configuration
+dataset: training-dataset
+num_joints: 7
+all_joints: [[0], [1], [2], [3], [4], [5], [6]]
+all_joints_names: ['left_antennae_tip', 'left_antennae_base', 'right_antennae_tip', 'right_antennae_base', 'left_pmthorax_boundary', 'right_pmthorax_boundary', 'body_end']
+init_weights: null
+global_scale: 0.8
+location_refinement: true
+locref_scale: 7.2801
+pose_estimate: true

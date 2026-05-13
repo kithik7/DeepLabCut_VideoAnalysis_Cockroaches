@@ -1,0 +1,75 @@
+/rhomes/kkesavan/miniforge3/envs/DEEPLABCUT/bin/python
+
+# NEW CORRECT SHELTER COORDINATES
+LEFT_SHELTER = [100, 300, 700, 900]    # x=[100-700], y=[300-900]
+RIGHT_SHELTER = [1300, 300, 1900, 900] # x=[1300-1900], y=[300-900]
+
+
+1507 x 1076 DIMENSION OF ARENA IN VIDEOS 
+https://github.com/DeepLabCut/DeepLabCut/issues/2644 - Pytorch with dlc pytorch only tensorflow cannot analyze all 300000 frames #!/bin/bash
+
+
+VIDEO FRAME COUNT CHECK ===
+Found 50 videos
+\n--- Basler_c04_acA2040-90um (24827095)_20250820_143759091.mp4 ---
+FPS: 2.0
+Total frames: 1,201
+Duration: 600.50 seconds (10.01 minutes)
+Counting first 1000 frames...
+Successfully read 1000 frames
+Expected frames for 10min: 1,200
+Actual/Expected ratio: 100.08%
+\n--- Basler_c00_acA2040-90um (24827095)_20250820_120514304.mp4 ---
+FPS: 2.0
+Total frames: 1,201
+Duration: 600.50 seconds (10.01 minutes)
+Counting first 1000 frames...
+Successfully read 1000 frames
+Expected frames for 10min: 1,200
+Actual/Expected ratio: 100.08%
+\n--- Basler_c01_acA2040-90um (24827095)_20250820_154029285.mp4 ---
+FPS: 2.0
+Total frames: 1,201
+Duration: 600.50 seconds (10.01 minutes)
+Counting first 1000 frames...
+Successfully read 1000 frames
+Expected frames for 10min: 1,200
+Actual/Expected ratio: 100.08%  - so 1201 frames IS RIGHT 
+
+
+
+login to ssh and then navigate to dlcv_project then tmux attach -t 1
+
+also save the environment properly module load python3/anaconda3
+source /rhomes/kkesavan/miniforge3/etc/profile.d/conda.sh
+conda activate /rhomes/kkesavan/miniforge3/envs/dlc_pytorch_gpu
+
+
+image J coordinates for left and right shelters 
+left - 1	Screenshot from 2025-10-08 11-37-39.png	41064	136.447	23	237	403	537	236	174
+right 1	Screenshot from 2025-10-08 11-37-39.png	42672	158.546	80	224	1195	509	254	168
+open area 1	Screenshot from 2025-10-08 11-37-39.png	1442392	147.010	0	244	357	1	1204	1198
+
+body end likelhood 
+HECKING LIKELIHOOD FROM YOUR ACTUAL FILES ===
+Current directory: /rhomes/kkesavan/dlc_project/videos/August_2025/Aug20_Iso_Nothing/Group1_solos
+
+=== ANALYZING: Basler_c02_acA2040-90um (24827095)_20250820_151308988DLC_Resnet50_single_k7Sep2shuffle1_snapshot_200.csv ===
+✓ CSV loaded successfully
+
+=== ALL BODY PART LIKELIHOOD STATS ===
+⚠️ body_end                  mean: 0.753 | <0.6:  85/1201 (7.1%)
+⚠️ left_pmthorax_boundary    mean: 0.731 | <0.6: 100/1201 (8.3%)
+⚠️ right_pmthorax_boundary   mean: 0.724 | <0.6: 112/1201 (9.3%)
+⚠️ left_antennae_base        mean: 0.701 | <0.6: 227/1201 (18.9%)
+⚠️ right_antennae_base       mean: 0.695 | <0.6: 271/1201 (22.6%)
+❌ right_antennae_tip        mean: 0.361 | <0.6: 1200/1201 (99.9%)
+❌ left_antennae_tip         mean: 0.304 | <0.6: 1201/1201 (100.0%)
+
+🎯 BODY_END SPECIFIC:
+  Mean likelihood: 0.753
+  Frames < 0.6: 85/1201 (7.1%)
+  ✅ GOOD choice for tracking!
+(dlc_pytorch_gpu) kkesavan@agm
+
+Total Valid Time = The amount of time (in seconds) where the tracking confidence was above your threshold (0.6). So if your video is 600.5 seconds but some frames had poor tracking, the "total valid time" might be less than 600.5 seconds.
