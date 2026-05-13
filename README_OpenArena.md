@@ -2,23 +2,25 @@
 markdown file and some scripts that can be reused for video analysis with deeplab cut. the pipeline requires one to label videos on the GUI, upload the directory on the cluster, train the model on the cluster, run analyze videos and generate trajectory plots as well coordinate csvs. Post this, for just cockroach data, theres mov_analysis scripts
 #DLC video analysis pipeline 
 
-# Movement Analysis PM1 For fps — Project Documentation 
+# Movement Analysis PM1 - Project Documentation 
 The paths for in the config files are for the AGM-NAS cluster (nawrot lab), the folders specifically have local paths for the linux desktop in the same lab. This is subject to change of course relative to the project and my computational apparatus. 
 
-**Base System Path:** `/home/keerthie/Desktop/Keerthi/Project_Mod1/Movement_Analysis_Reusable_CompPipeline/`
+# Movement Analysis PM1 For fps — Project Documentation
+
+**Git Working Directory Path:** `/home/keerthie/Desktop/Keerthi/Project_Mod1/Movement_Analysis_Reusable_CompPipeline/`
 
 ***
 
-### Project Paths & Descriptions
+### Project Directory & Repository Links
 
 * [Data_Movement_Analysis/](Data_Movement_Analysis/)
-  Main directory containing all movement analysis datasets.
+  Main directory containing core tracking datasets.
 
   * [Data_Movement_Analysis/Movement_Analysis_Group/](Data_Movement_Analysis/Movement_Analysis_Group/)
-    Group trial data sheets containing all frames and tracking information.
+    Group trial tracking spreadsheet data sheets (all frames & tracking metrics).
 
   * [Data_Movement_Analysis/Movement_Analysis_Solo/](Data_Movement_Analysis/Movement_Analysis_Solo/)
-    Solo trial data sheets containing all frames and tracking information.
+    Solo trial tracking spreadsheet data sheets (all frames & tracking metrics).
 
 
 * [Pipeline/](Pipeline/)
@@ -50,8 +52,8 @@ The paths for in the config files are for the AGM-NAS cluster (nawrot lab), the 
       Script for tracking efficiency (*Note: group_all_frames component is missing*).
 
 
-  * [Pipeline/Pytorch_Models_Old/](Pipeline/Pytorch_Models_Old/)
-    DeepLabCut PyTorch models from September 2025 with separate test and train folders for group and solo recordings.
+  * `Pipeline/Pytorch_Models_Old/` 
+    DeepLabCut PyTorch models from September 2025 with separate test and train folders.
 
 
   * [Pipeline/Post_Training_Scripts/](Pipeline/Post_Training_Scripts/)
@@ -63,11 +65,10 @@ The paths for in the config files are for the AGM-NAS cluster (nawrot lab), the 
     * [Pipeline/Post_Training_Scripts/labelled_videos_trajectoryplots.py](Pipeline/Post_Training_Scripts/labelled_videos_trajectoryplots.py)
       Script used to generate labeled videos and plot trajectory graphs.
 
-***
 
 ### Server Reference & Cluster Execution
 
-#### Environment Initialization
+#### Environment Initializatio
 ```bash
 # Load module infrastructure and activate environment
 module load python3/anaconda3
