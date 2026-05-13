@@ -2,9 +2,10 @@
 markdown file and some scripts that can be reused for video analysis with deeplab cut. the pipeline requires one to label videos on the GUI, upload the directory on the cluster, train the model on the cluster, run analyze videos and generate trajectory plots as well coordinate csvs. Post this, for just cockroach data, theres mov_analysis scripts
 #DLC video analysis pipeline 
 
-# Movement Analysis PM1 For fps — Project Documentation
+# Movement Analysis PM1 For fps — Project Documentation 
+The paths for in the config files are for the AGM-NAS cluster (nawrot lab), the folders specifically have local paths for the linux desktop in the same lab. This is subject to change of course relative to the project and my computational apparatus. 
 
-**Base System Path:** `/home/keerthie/Desktop/Keerthi/Project_Mod1/Movement_Analysis_PM1_For_fps/`
+**Base System Path:** `/home/keerthie/Desktop/Keerthi/Project_Mod1/Movement_Analysis_Reusable_CompPipeline/`
 
 ***
 
@@ -104,9 +105,8 @@ tmux attach -t 1
 
 ***
 
-### Dataset Telemetry & Quality Benchmarks
 
-#### Video Frame Constants
+#### Video Frame Parameters
 * **Framerate:** `2.0 FPS`
 * **Target Run Duration:** `600.50 seconds` (10.01 minutes)
 * **Standard Frame Allocation:** `1201 frames` is verified as accurate (`100.08%` ratio)
@@ -126,7 +126,7 @@ tmux attach -t 1
 * **Resolution**: Force DeepLabCut engine execution within PyTorch native deployment wrappers. Pure TensorFlow allocations fail to scale over long frame periods. Reference engine verification context via [DeepLabCut Issue #2644](https://github.com).
 
 #### 2. Tracking Quality Drop & Decreased "Total Valid Time"
-* **Issue**: The telemetry validation script calculates a `Total Valid Time` lower than your standard video window duration of `600.5 seconds`.
+* **Issue**: The script calculates a `Total Valid Time` lower than your standard video window duration of `600.5 seconds`.
 * **Resolution**: Verify your confidence filtering configuration thresholds. If data frames possess an evaluation likelihood score lower than `< 0.6`, they drop out of tracking runtime limits. 
 * **Actionable Correction**:
   * Swap unstable tracking nodes (`left_antennae_tip` at 100% failure rate / `right_antennae_tip` at 99.9% failure rate) out of distance-mapping arrays.
