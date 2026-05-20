@@ -23,7 +23,7 @@ from scipy import stats
 
 print('group movement analysis with tracking efficiency')
 
-# Experimental design from your CSV
+# Experimental design from CSV hardcoded in
 EXPERIMENT_DESIGN = {
     '2025-08-20': {'batch': 2, 'type': 'Iso/Nothing', 'left': 'Iso', 'right': 'Nothing'},
     '2025-08-21': {'batch': 1, 'type': 'Iso/Nothing', 'left': 'Iso', 'right': 'Nothing'},
@@ -377,7 +377,7 @@ if all_movement_results:
     # Summary statistics
     if successful_moves > 0:
         successful_data = move_df[move_df['error'].isna()]
-        print(f'\\nTRACKING EFFICIENCY SUMMARY:')
+        print(f'\\n TE summary:')
         print(f'   Average tracking efficiency: {successful_data[\"tracking_efficiency\"].mean():.1f}%')
         print(f'   Average likelihood: {successful_data[\"avg_likelihood\"].mean():.3f}')
         print(f'   Tracking quality distribution:')
@@ -385,17 +385,17 @@ if all_movement_results:
         for quality, count in quality_counts.items():
             print(f'     {quality}: {count} animals ({count/len(successful_data)*100:.1f}%)')
         
-        print(f'\\n MOVEMENT SUMMARY:')
+        print(f'\\n mov summary:')
         print(f'   Average speed: {successful_data[\"mean_speed_cm_s\"].mean():.2f} cm/s')
         print(f'   Average distance: {successful_data[\"total_distance_cm\"].mean():.1f} cm')
         print(f'   Average straightness: {successful_data[\"straightness_index\"].mean():.3f}')
         
-        print(f'\\n📋 COLUMNS IN OUTPUT FILE:')
+        print(f'\\n columns in output file:')
         print(f'   Total columns: {len(move_df.columns)}')
         print(f'   Key tracking columns: tracking_efficiency, avg_likelihood, tracking_quality, avg_segment_length')
         print(f'   Key movement columns: mean_speed_cm_s, total_distance_cm, straightness_index, activity_ratio')
 else:
     print('\\n could not generate movement results')
 
-print(f'\\n Analysis complete! Ready for merging with shelter preference data.')
+print(f'\\n Analysis complete.')
 "
