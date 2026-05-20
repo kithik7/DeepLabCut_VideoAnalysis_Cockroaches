@@ -104,7 +104,9 @@ tmux attach -t 1
 | **Central Open Area** | 1,442,392 | 147.010 | 357 | 1 | 1204 | 1198 |
 
 ***
+Locomotion Analysis
 
+Locomotion parameters were calculated by converting the pixel coordinates into centimeters using the pixel-to-cm conversion value (0.032413). The parameters that were evaluated are mathematically and operationally tabulated below:
 
 | Metric Name | Formula | Units | Description |
 | :--- | :--- | :--- | :--- |
