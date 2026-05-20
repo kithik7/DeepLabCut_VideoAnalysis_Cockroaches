@@ -106,6 +106,33 @@ tmux attach -t 1
 ***
 
 
+| Metric Name | Formula | Units | Description |
+| :--- | :--- | :--- | :--- |
+| **Total Frames** | $N$ | frames | Number of frames in video |
+| **Total Time** | $\frac{N}{\text{fps}}$ | seconds | Duration of video |
+| **Total Distance** | $\sum_{i=1}^{N-1} \sqrt{(\Delta x_i)^2 + (\Delta y_i)^2}$ | cm | Cumulative path length traveled |
+| **Mean Speed** | $\frac{1}{N-1} \sum_{i=1}^{N-1} \frac{\sqrt{(\Delta x_i)^2 + (\Delta y_i)^2}}{\text{frame duration}}$ | cm/s | Speed averaged over all frames |
+| **Max Speed** | $\max \left( \frac{\sqrt{(\Delta x_i)^2 + (\Delta y_i)^2}}{\text{frame duration}} \right)$ | cm/s | Maximum instantaneous frame-to-frame speed |
+| **Net Displacement** | $\sqrt{(x_{\text{final}} - x_{\text{initial}})^2 + (y_{\text{final}} - y_{\text{initial}})^2}$ | cm | Straight-line distance start to end |
+| **Straightness Index** | $\frac{\text{net displacement}}{\text{total distance}}$ | ratio | Path efficiency (0–1); higher is straighter |
+
+### Arena Quadrant Division
+
+The arena is divided into an X-shaped configuration based on angular thresholds calculated from the central coordinate $(X_{\text{center}}, Y_{\text{center}})$. 
+
+
+| Quadrant | Angular Range | Description |
+| :--- | :--- | :--- |
+| **TOP** | $45^\circ < \theta \leq 135^\circ$ | Upper quadrant section |
+| **LEFT** | $135^\circ < \theta \leq 225^\circ$ | Left quadrant section |
+| **BOTTOM** | $225^\circ < \theta \leq 315^\circ$ | Lower quadrant section |
+| **RIGHT** | $315^\circ < \theta \leq 45^\circ$ (or $\geq 0^\circ \cup \leq 45^\circ$) | Right quadrant section |
+
+*Key Parameters:*
+* **Arena Diameter:** $59\text{ cm}$
+* **Origin Point:** $\text{Center } (X_{\text{center}}, Y_{\text{center}})$
+
+
 #### Video Frame Parameters
 * **Framerate:** `2.0 FPS`
 * **Target Run Duration:** `600.50 seconds` (10.01 minutes)
