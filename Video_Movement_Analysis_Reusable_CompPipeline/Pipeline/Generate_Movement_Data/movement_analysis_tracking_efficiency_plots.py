@@ -80,7 +80,7 @@ print('Creating tracking quality assessment plots..')
 fig, axes = plt.subplots(2, 3, figsize=(18, 12))
 fig.suptitle('Tracking Quality Assessment Across Experiments', fontsize=16, fontweight='bold')
 
-# 1A. Tracking efficiency distribution
+#Tracking efficiency distribution
 if 'tracking_efficiency' in data.columns:
     axes[0,0].hist(data['tracking_efficiency'], bins=20, alpha=0.7, color='skyblue', edgecolor='black')
     axes[0,0].axvline(data['tracking_efficiency'].mean(), color='red', linestyle='--', label=f'Mean: {data[\"tracking_efficiency\"].mean():.3f}')
@@ -307,11 +307,8 @@ if 'tracking_efficiency' in data.columns:
     plt.savefig('tracking_quality_effects.pdf', bbox_inches='tight')
     plt.close()
 
-# =============================================================================
-# 4. STATISTICAL SUMMARY WITH TRACKING QUALITY
-# =============================================================================
 
-print('Generating statistical summary with tracking quality...')
+
 
 # Create comprehensive summary
 summary_data = []
