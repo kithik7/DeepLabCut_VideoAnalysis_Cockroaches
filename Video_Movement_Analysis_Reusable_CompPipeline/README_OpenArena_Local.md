@@ -1,15 +1,15 @@
-# DeepLabCut_VideoAnalysis_Cockroaches_LocalLinuxDesktopVersion
+## DeepLabCut_VideoAnalysis_Cockroaches_LocalLinuxDesktopVersion
 markdown file and some scripts that can be reused for video analysis with deeplab cut. the pipeline requires one to label videos on the GUI, upload the directory on the cluster, train the model on the cluster, run analyze videos and generate trajectory plots as well coordinate csvs. Post this, for just cockroach data, theres mov_analysis scripts
 #DLC video analysis pipeline 
 
-# Movement Analysis - Project Documentation 
+### Movement and Shelter Analysis - Project Documentation 
 The paths for in the config files are for the AGM-NAS cluster (nawrot lab), the folders specifically have local paths for the linux desktop in the same lab. This is subject to change of course relative to the project and my computational apparatus. 
 
 **Base System Path:** `/home/keerthie/Desktop/Keerthi/Project_Mod1/Movement_Analysis_Reusable_CompPipeline/`
 
 ***
 
-### Project Paths & Descriptions
+#### Project Paths & Descriptions
 
 * [Data_Movement_Analysis/](Data_Movement_Analysis/)
   Main directory containing all movement analysis datasets.
