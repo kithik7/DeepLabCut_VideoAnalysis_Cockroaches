@@ -27,4 +27,4 @@ print("Plotting trajectories...")
 dlc.plot_trajectories(config_path, video_paths)
 print("Trajectory plots generated")
 
-print("ALL PROCESSING COMPLETE!")
+print("processing complete, yay!")
