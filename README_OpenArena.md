@@ -170,7 +170,7 @@ The arena is divided into an X-shaped configuration based on angular thresholds 
 
 #### 3. PyTorch CUDA / GPU Initialization Mismatch on Cluster
 * **Issue**: Python defaults to CPU execution inside tmux or fails to fetch active GPU nodes.
-* **Resolution**: Always ensure environmental shell variables and paths load accurately sequentially prior to execution. Run this explicit module reset sequence inside your tmux container wrapper:
+* **Resolution**: Always ensure environmental shell variables and paths load accurately, and in proper sequence, prior to execution. Run these explicit module reset lines in Tmux
   ```bash
   module purge
   module load python3/anaconda3
