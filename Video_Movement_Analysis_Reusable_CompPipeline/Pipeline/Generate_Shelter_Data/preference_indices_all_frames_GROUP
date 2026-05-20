@@ -1,0 +1,409 @@
+#!/bin/bash
+#SBATCH --job-name=group_preference_indices
+#SBATCH --output=group_preference_indices.out
+#SBATCH --error=group_preference_indices.err
+#SBATCH --partition=gpu_a6000
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=4
+#SBATCH --mem=16G
+#SBATCH --time=01:00:00
+
+module load python3/anaconda3
+source /rhomes/kkesavan/miniforge3/etc/profile.d/conda.sh
+conda activate /rhomes/kkesavan/miniforge3/envs/dlc_pytorch_gpu
+
+python -c "
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from scipy import stats
+import warnings
+warnings.filterwarnings('ignore')
+
+print('=== GROUP PREFERENCE INDICES CALCULATION ===')
+
+# Set muted color palette
+muted_palette = ['#4C72B0', '#DD8452', '#55A868', '#C44E52', '#8172B3', '#937860', '#DA8BC3', '#8C8C8C']
+sns.set_palette(muted_palette)
+plt.style.use('seaborn-v0_8-whitegrid')
+
+# =============================================================================
+# LOAD AND PROCESS BOTH DATASETS
+# =============================================================================
+
+datasets = {}
+
+# Load all frames group data
+try:
+    all_frames_df = pd.read_csv('comprehensive_group_analysis_all_frames.csv')
+    all_frames_df = all_frames_df[all_frames_df['error'].isna()].copy()
+    all_frames_df['dataset'] = 'All Frames'
+    datasets['All Frames'] = all_frames_df
+    print(f'✅ Loaded all frames data: {len(all_frames_df)} records')
+except Exception as e:
+    print(f'❌ Error loading all frames data: {e}')
+
+# Load tracking efficiency group data
+try:
+    tracking_df = pd.read_csv('comprehensive_analysis_tracking_efficiency.csv')
+    tracking_df = tracking_df[tracking_df['error'].isna()].copy()
+    tracking_df['dataset'] = 'Tracking Filtered'
+    datasets['Tracking Filtered'] = tracking_df
+    print(f'✅ Loaded tracking data: {len(tracking_df)} records')
+except Exception as e:
+    print(f'❌ Error loading tracking data: {e}')
+
+if not datasets:
+    print('❌ No datasets loaded successfully!')
+    exit()
+
+# =============================================================================
+# CALCULATE PREFERENCE INDICES FOR EACH DATASET
+# =============================================================================
+
+def calculate_preference_indices(df):
+    \"\"\"Calculate all preference indices for a dataset\"\"\"
+    
+    # Create odor pair type
+    df['odor_pair_type'] = df.apply(
+        lambda row: 'Iso vs Feces' if ('Iso' in [row['left_shelter_odor'], row['right_shelter_odor']] and 
+                                      'Feces' in [row['left_shelter_odor'], row['right_shelter_odor']]) else
+                   'Iso vs Nothing' if ('Iso' in [row['left_shelter_odor'], row['right_shelter_odor']] and 
+                                       'Nothing' in [row['left_shelter_odor'], row['right_shelter_odor']]) else
+                   'Feces vs Nothing' if ('Feces' in [row['left_shelter_odor'], row['right_shelter_odor']] and 
+                                         'Nothing' in [row['left_shelter_odor'], row['right_shelter_odor']]) else 'Other', axis=1)
+
+    # 1. TIME-BASED PREFERENCE INDEX (-1 to +1)
+    def calculate_time_preference(row):
+        total_shelter_time = row['time_left_shelter'] + row['time_right_shelter']
+        if total_shelter_time > 0:
+            return (row['time_left_shelter'] - row['time_right_shelter']) / total_shelter_time
+        else:
+            return 0
+
+    df['pref_index_time'] = df.apply(calculate_time_preference, axis=1)
+
+    # 2. ODOR PREFERENCE INDEX (For odor vs nothing comparisons)
+    def calculate_odor_preference(row):
+        if row['odor_pair_type'] in ['Iso vs Nothing', 'Feces vs Nothing']:
+            if row['left_shelter_odor'] in ['Iso', 'Feces']:
+                odor_time = row['time_left_shelter']
+                nothing_time = row['time_right_shelter']
+            else:
+                odor_time = row['time_right_shelter']
+                nothing_time = row['time_left_shelter']
+            
+            total_time = odor_time + nothing_time
+            if total_time > 0:
+                return (odor_time - nothing_time) / total_time
+            else:
+                return 0
+        else:
+            return np.nan
+
+    df['pref_index_odor'] = df.apply(calculate_odor_preference, axis=1)
+
+    # 3. RELATIVE PREFERENCE STRENGTH (0 to 1)
+    df['pref_strength'] = df['pref_index_time'].abs()
+
+    # 4. SHELTER VS OPEN PREFERENCE (-1 to +1)
+    def calculate_shelter_preference(row):
+        total_time = row['time_left_shelter'] + row['time_right_shelter'] + row['time_open_area']
+        if total_time > 0:
+            shelter_time = row['time_left_shelter'] + row['time_right_shelter']
+            return (shelter_time - row['time_open_area']) / total_time
+        else:
+            return 0
+
+    df['pref_index_shelter_vs_open'] = df.apply(calculate_shelter_preference, axis=1)
+
+    # 5. ODOR-SPECIFIC PREFERENCE INDICES
+    def calculate_iso_preference(row):
+        if 'Iso' in [row['left_shelter_odor'], row['right_shelter_odor']]:
+            if row['left_shelter_odor'] == 'Iso':
+                iso_time = row['time_left_shelter']
+                other_time = row['time_right_shelter']
+            else:
+                iso_time = row['time_right_shelter']
+                other_time = row['time_left_shelter']
+            
+            total_time = iso_time + other_time
+            if total_time > 0:
+                return (iso_time - other_time) / total_time
+        return np.nan
+
+    def calculate_feces_preference(row):
+        if 'Feces' in [row['left_shelter_odor'], row['right_shelter_odor']]:
+            if row['left_shelter_odor'] == 'Feces':
+                feces_time = row['time_left_shelter']
+                other_time = row['time_right_shelter']
+            else:
+                feces_time = row['time_right_shelter']
+                other_time = row['time_left_shelter']
+            
+            total_time = feces_time + other_time
+            if total_time > 0:
+                return (feces_time - other_time) / total_time
+        return np.nan
+
+    df['pref_index_iso'] = df.apply(calculate_iso_preference, axis=1)
+    df['pref_index_feces'] = df.apply(calculate_feces_preference, axis=1)
+    
+    return df
+
+# Calculate indices for each dataset
+print('\\n📊 CALCULATING PREFERENCE INDICES...')
+for name, df in datasets.items():
+    datasets[name] = calculate_preference_indices(df)
+    print(f'✅ Calculated indices for {name}: {len(df)} animals')
+
+# =============================================================================
+# CREATE SEPARATE PREFERENCE INDICES CSVs
+# =============================================================================
+
+print('\\n💾 CREATING PREFERENCE INDICES CSVs...')
+
+# Common columns for preference indices
+pref_columns = [
+    'video', 'date', 'batch', 'experiment_type', 'odor_pair_type',
+    'left_shelter_odor', 'right_shelter_odor', 'animal_id',
+    'preferred_zone', 'preferred_odor',
+    'time_left_shelter', 'time_right_shelter', 'time_open_area',
+    'percent_left', 'percent_right', 'percent_open',
+    'pref_index_time', 'pref_index_odor', 'pref_strength', 
+    'pref_index_shelter_vs_open', 'pref_index_iso', 'pref_index_feces',
+    'dataset'
+]
+
+# Add tracking-specific columns if available
+tracking_cols = ['tracking_efficiency', 'avg_likelihood', 'tracking_quality', 
+                'valid_frames', 'total_frames', 'avg_segment_length']
+
+# Create preference indices datasets
+for name, df in datasets.items():
+    available_cols = [col for col in pref_columns if col in df.columns]
+    
+    # Add tracking columns if this is the tracking dataset
+    if name == 'Tracking Filtered':
+        available_tracking_cols = [col for col in tracking_cols if col in df.columns]
+        available_cols.extend(available_tracking_cols)
+    
+    pref_df = df[available_cols].copy()
+    
+    # Save to CSV
+    output_file = f'preference_index_{name.lower().replace(\" \", \"_\")}_group.csv'
+    pref_df.to_csv(output_file, index=False)
+    print(f'✅ Saved {output_file}: {len(pref_df)} records')
+
+# =============================================================================
+# CREATE COMBINED DATASET FOR COMPARISON
+# =============================================================================
+
+print('\\n🔄 CREATING COMBINED DATASET...')
+
+# Combine all datasets
+combined_dfs = []
+for name, df in datasets.items():
+    available_cols = [col for col in pref_columns if col in df.columns]
+    combined_dfs.append(df[available_cols].copy())
+
+combined_df = pd.concat(combined_dfs, ignore_index=True)
+
+# Save combined dataset
+combined_df.to_csv('preference_index_combined_group.csv', index=False)
+print(f'✅ Saved preference_index_combined_group.csv: {len(combined_df)} total records')
+
+# =============================================================================
+# CREATE SUMMARY STATISTICS
+# =============================================================================
+
+print('\\n📊 CREATING SUMMARY STATISTICS...')
+
+summary_data = []
+for dataset_name in combined_df['dataset'].unique():
+    dataset_subset = combined_df[combined_df['dataset'] == dataset_name]
+    
+    for odor_type in ['Iso vs Nothing', 'Feces vs Nothing', 'Iso vs Feces']:
+        subset = dataset_subset[dataset_subset['odor_pair_type'] == odor_type]
+        if len(subset) > 0:
+            summary_row = {
+                'dataset': dataset_name,
+                'odor_combination': odor_type,
+                'n_individuals': len(subset),
+                'mean_pref_index_time': subset['pref_index_time'].mean(),
+                'std_pref_index_time': subset['pref_index_time'].std(),
+                'mean_pref_strength': subset['pref_strength'].mean(),
+                'std_pref_strength': subset['pref_strength'].std(),
+                'mean_shelter_vs_open': subset['pref_index_shelter_vs_open'].mean(),
+                'std_shelter_vs_open': subset['pref_index_shelter_vs_open'].std(),
+            }
+            
+            # Add odor-specific preferences where applicable
+            if odor_type in ['Iso vs Nothing', 'Iso vs Feces']:
+                summary_row['mean_pref_index_iso'] = subset['pref_index_iso'].mean()
+                summary_row['std_pref_index_iso'] = subset['pref_index_iso'].std()
+            
+            if odor_type in ['Feces vs Nothing', 'Iso vs Feces']:
+                summary_row['mean_pref_index_feces'] = subset['pref_index_feces'].mean()
+                summary_row['std_pref_index_feces'] = subset['pref_index_feces'].std()
+            
+            if odor_type in ['Iso vs Nothing', 'Feces vs Nothing']:
+                summary_row['mean_pref_index_odor'] = subset['pref_index_odor'].mean()
+                summary_row['std_pref_index_odor'] = subset['pref_index_odor'].std()
+            
+            summary_data.append(summary_row)
+
+summary_df = pd.DataFrame(summary_data)
+summary_df.to_csv('preference_indices_group_summary.csv', index=False)
+print('✅ Saved preference_indices_group_summary.csv')
+
+# =============================================================================
+# CREATE COMPARISON VISUALIZATION
+# =============================================================================
+
+print('\\n📈 CREATING COMPARISON VISUALIZATION...')
+
+fig, axes = plt.subplots(2, 2, figsize=(16, 12))
+fig.suptitle('Group Preference Indices: All Frames vs Tracking Filtered', fontsize=16, fontweight='bold')
+
+# Plot 1: Time-based preference index comparison
+ax1 = axes[0, 0]
+for i, dataset_name in enumerate(combined_df['dataset'].unique()):
+    dataset_subset = combined_df[combined_df['dataset'] == dataset_name]
+    
+    for j, odor_type in enumerate(['Iso vs Nothing', 'Feces vs Nothing', 'Iso vs Feces']):
+        subset = dataset_subset[dataset_subset['odor_pair_type'] == odor_type]
+        if len(subset) > 0:
+            x_pos = j + (i * 0.3) - 0.15  # Offset for different datasets
+            color = muted_palette[j]
+            alpha = 0.7 if dataset_name == 'All Frames' else 1.0
+            marker = 'o' if dataset_name == 'All Frames' else 's'
+            
+            mean_pref = subset['pref_index_time'].mean()
+            sem = subset['pref_index_time'].sem()
+            
+            ax1.errorbar(x_pos, mean_pref, yerr=sem, 
+                        color=color, alpha=alpha, marker=marker, markersize=8,
+                        capsize=5, label=f'{odor_type} ({dataset_name})' if i == 0 else \"\")
+
+ax1.axhline(y=0, color='red', linestyle='--', alpha=0.7, label='No preference')
+ax1.set_title('A. Shelter Preference Index Comparison', fontweight='bold')
+ax1.set_ylabel('Preference Index\\n(-1 = Right, +1 = Left)')
+ax1.set_xlabel('Odor Combination')
+ax1.set_xticks(range(3))
+ax1.set_xticklabels(['Iso vs\\nNothing', 'Feces vs\\nNothing', 'Iso vs\\nFeces'])
+ax1.set_ylim(-1, 1)
+ax1.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+ax1.grid(True, alpha=0.3, axis='y')
+
+# Plot 2: Preference strength comparison
+ax2 = axes[0, 1]
+strength_data = []
+for dataset_name in combined_df['dataset'].unique():
+    dataset_subset = combined_df[combined_df['dataset'] == dataset_name]
+    for odor_type in ['Iso vs Nothing', 'Feces vs Nothing', 'Iso vs Feces']:
+        subset = dataset_subset[dataset_subset['odor_pair_type'] == odor_type]
+        if len(subset) > 0:
+            for _, row in subset.iterrows():
+                strength_data.append({
+                    'Dataset': dataset_name,
+                    'Odor Combination': odor_type,
+                    'Preference Strength': row['pref_strength']
+                })
+
+if strength_data:
+    strength_df = pd.DataFrame(strength_data)
+    sns.boxplot(data=strength_df, x='Odor Combination', y='Preference Strength', 
+                hue='Dataset', ax=ax2, palette=[muted_palette[0], muted_palette[1]])
+    ax2.set_title('B. Decision Confidence Comparison', fontweight='bold')
+    ax2.set_ylabel('Preference Strength\\n(0 = Indifferent, 1 = Strong)')
+    ax2.set_ylim(0, 1)
+    ax2.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+    ax2.grid(True, alpha=0.3, axis='y')
+
+# Plot 3: Shelter vs Open preference comparison
+ax3 = axes[1, 0]
+for i, dataset_name in enumerate(combined_df['dataset'].unique()):
+    dataset_subset = combined_df[combined_df['dataset'] == dataset_name]
+    
+    for j, odor_type in enumerate(['Iso vs Nothing', 'Feces vs Nothing', 'Iso vs Feces']):
+        subset = dataset_subset[dataset_subset['odor_pair_type'] == odor_type]
+        if len(subset) > 0:
+            x_pos = j + (i * 0.3) - 0.15
+            color = muted_palette[j + 3]  # Different colors
+            alpha = 0.7 if dataset_name == 'All Frames' else 1.0
+            marker = 'o' if dataset_name == 'All Frames' else 's'
+            
+            mean_pref = subset['pref_index_shelter_vs_open'].mean()
+            sem = subset['pref_index_shelter_vs_open'].sem()
+            
+            ax3.errorbar(x_pos, mean_pref, yerr=sem, 
+                        color=color, alpha=alpha, marker=marker, markersize=8,
+                        capsize=5, label=f'{odor_type} ({dataset_name})' if i == 0 else \"\")
+
+ax3.axhline(y=0, color='red', linestyle='--', alpha=0.7, label='Equal preference')
+ax3.set_title('C. Shelter vs Open Area Preference', fontweight='bold')
+ax3.set_ylabel('Preference Index\\n(-1 = Open, +1 = Shelter)')
+ax3.set_xlabel('Odor Combination')
+ax3.set_xticks(range(3))
+ax3.set_xticklabels(['Iso vs\\nNothing', 'Feces vs\\nNothing', 'Iso vs\\nFeces'])
+ax3.set_ylim(-1, 1)
+ax3.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+ax3.grid(True, alpha=0.3, axis='y')
+
+# Plot 4: Tracking efficiency vs preference strength (if available)
+ax4 = axes[1, 1]
+if 'Tracking Filtered' in datasets and 'tracking_efficiency' in datasets['Tracking Filtered'].columns:
+    tracking_data = datasets['Tracking Filtered']
+    scatter = ax4.scatter(tracking_data['tracking_efficiency'], 
+                         tracking_data['pref_strength'],
+                         c=tracking_data['avg_likelihood'] if 'avg_likelihood' in tracking_data.columns else muted_palette[0],
+                         cmap='Blues', alpha=0.7, s=50)
+    
+    ax4.set_xlabel('Tracking Efficiency (%)')
+    ax4.set_ylabel('Preference Strength')
+    ax4.set_title('D. Tracking Quality vs Decision Confidence', fontweight='bold')
+    ax4.grid(True, alpha=0.3)
+    
+    if 'avg_likelihood' in tracking_data.columns:
+        plt.colorbar(scatter, ax=ax4, label='Average Likelihood')
+else:
+    ax4.text(0.5, 0.5, 'Tracking data not available\\nfor this comparison', 
+             ha='center', va='center', transform=ax4.transAxes, fontsize=12)
+    ax4.set_title('D. Tracking Quality vs Decision Confidence', fontweight='bold')
+
+plt.tight_layout()
+plt.savefig('preference_indices_group_comparison.png', dpi=300, bbox_inches='tight')
+plt.savefig('preference_indices_group_comparison.pdf', bbox_inches='tight')
+plt.close()
+
+# =============================================================================
+# PRINT KEY INSIGHTS
+# =============================================================================
+
+print('\\n🔍 KEY INSIGHTS FROM GROUP PREFERENCE INDICES:')
+for dataset_name in combined_df['dataset'].unique():
+    dataset_subset = combined_df[combined_df['dataset'] == dataset_name]
+    print(f'\\n{dataset_name}:')
+    
+    for odor_type in ['Iso vs Nothing', 'Feces vs Nothing', 'Iso vs Feces']:
+        subset = dataset_subset[dataset_subset['odor_pair_type'] == odor_type]
+        if len(subset) > 0:
+            mean_pref = subset['pref_index_time'].mean()
+            strength = subset['pref_strength'].mean()
+            
+            direction = 'left' if mean_pref > 0.1 else 'right' if mean_pref < -0.1 else 'no clear'
+            confidence = 'strong' if strength > 0.6 else 'moderate' if strength > 0.3 else 'weak'
+            
+            print(f'  {odor_type}: {direction} preference (index: {mean_pref:.3f}), {confidence} confidence')
+
+print(f'\\n✅ ANALYSIS COMPLETE!')
+print(f'✅ Generated: preference_index_all_frames_group.csv')
+print(f'✅ Generated: preference_index_tracking_filtered_group.csv') 
+print(f'✅ Generated: preference_index_combined_group.csv')
+print(f'✅ Generated: preference_indices_group_summary.csv')
+print(f'✅ Generated: preference_indices_group_comparison.png/pdf')
+print(f'\\n📁 Your group preference indices are ready for analysis!')
+"
