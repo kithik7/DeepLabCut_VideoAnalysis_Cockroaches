@@ -19,7 +19,7 @@ import deeplabcut
 import glob
 import os
 
-print('=== CREATING LABELED VIDEOS (NO CROPPING) ===')
+
 video_files = glob.glob('./videos/**/*.mp4', recursive=True)
 video_files = [os.path.abspath(v) for v in video_files]
 print(f'Found {len(video_files)} videos')
@@ -51,7 +51,7 @@ for i, video_path in enumerate(video_files, 1):
 
 print(f'\\n Labeled Videos: {success_count}/{len(video_files)}')
 
-print('\\n=== CREATING TRAJECTORY PLOTS ===')
+
 plot_success = 0
 for i, video_path in enumerate(video_files, 1):
     print(f'[{i}/{len(video_files)}] Creating trajectory plot: {os.path.basename(video_path)}')
@@ -61,7 +61,7 @@ for i, video_path in enumerate(video_files, 1):
             [video_path],
             shuffle=1,
             trainingsetindex=0,
-            filtered=False,
+            filtered=False, #SET TO TRUE TO SMOOTHEN PREDICTIONS
             showfigures=False
         )
         plot_success += 1
@@ -69,7 +69,7 @@ for i, video_path in enumerate(video_files, 1):
     except Exception as e:
         print(f'   Plot failed: {e}')
 
-print(f'\\n VISUALIZATION COMPLETE!')
+print(f'\\n komplett')
 print(f'   - Labeled Videos: {success_count}/{len(video_files)}')
 print(f'   - Trajectory Plots: {plot_success}/{len(video_files)}')
 "
