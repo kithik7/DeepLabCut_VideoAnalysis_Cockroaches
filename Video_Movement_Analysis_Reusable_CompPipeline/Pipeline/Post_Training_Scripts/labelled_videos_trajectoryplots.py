@@ -45,11 +45,11 @@ for i, video_path in enumerate(video_files, 1):
             save_frames=False
         )
         success_count += 1
-        print('  ✅ Labeled video created (full frame)')
+        print('   Labeled video created (full frame)')
     except Exception as e:
-        print(f'  ❌ Failed: {e}')
+        print(f'   Failed: {e}')
 
-print(f'\\n✅ Labeled Videos: {success_count}/{len(video_files)}')
+print(f'\\n Labeled Videos: {success_count}/{len(video_files)}')
 
 print('\\n=== CREATING TRAJECTORY PLOTS ===')
 plot_success = 0
@@ -65,11 +65,11 @@ for i, video_path in enumerate(video_files, 1):
             showfigures=False
         )
         plot_success += 1
-        print('  ✅ Trajectory plot created')
+        print('   Trajectory plot created')
     except Exception as e:
-        print(f'  ❌ Plot failed: {e}')
+        print(f'   Plot failed: {e}')
 
-print(f'\\n🎉 VISUALIZATION COMPLETE!')
+print(f'\\n VISUALIZATION COMPLETE!')
 print(f'   - Labeled Videos: {success_count}/{len(video_files)}')
 print(f'   - Trajectory Plots: {plot_success}/{len(video_files)}')
 "
