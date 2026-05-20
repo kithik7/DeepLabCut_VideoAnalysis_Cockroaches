@@ -36,19 +36,20 @@ The paths for in the config files are for the AGM-NAS cluster (nawrot lab), the 
   * [Pipeline/imp_notes.txt](Pipeline/imp_notes.txt)
     Important pointers and reference notes regarding tmux usage and cluster environments.
 
+  * [Pipeline/Generate_Shelter_Data/](Pipeline/Generate_Shelter_Data/)
+    Subfolder containing scripts to make data frames with time spent under shelter parameters.
 
   * [Pipeline/Generate_Movement_Data/](Pipeline/Generate_Movement_Data/)
-    Subfolder containing scripts to extract tracking datasets.
+    Subfolder containing scripts to make data frames with movement parameters 
 
     * [Pipeline/Generate_Movement_Data/movement_analysis_all_frames.py](Pipeline/Generate_Movement_Data/movement_analysis_all_frames.py)
-      Script for extracting all frames data.
-
+ 
+      
     * [Pipeline/Generate_Movement_Data/movement_analysis_tracking_efficiency_GROUP.py](Pipeline/Generate_Movement_Data/movement_analysis_tracking_efficiency_GROUP.py)
-      Script for measuring tracking efficiency in group trials.
+      
 
     * [Pipeline/Generate_Movement_Data/movement_analysis_tracking_efficiency.py](Pipeline/Generate_Movement_Data/movement_analysis_tracking_efficiency.py)
-      Script for tracking efficiency (*Note: group_all_frames component is missing*).
-
+      
 
   * [Pipeline/Pytorch_Models_Old/](Pipeline/Pytorch_Models_Old/)
     DeepLabCut PyTorch models from September 2025 with separate test and train folders for group and solo recordings.
@@ -109,8 +110,9 @@ tmux attach -t 1
 #### Video Frame Parameters
 * **Framerate:** `2.0 FPS`
 * **Target Run Duration:** `600.50 seconds` (10.01 minutes)
-* **Standard Frame Allocation:** `1201 frames` is verified as accurate (`100.08%` ratio)
+* **Standard Frame Allocation:** `1201 frames` is verifiable
 
+  
 #### Tracking Bodypart Likelihood Profile (DLC ResNet50)
 * **Confidence Threshold Constraint:** `0.6` (Frames below threshold reduce Total Valid Time)
 * **`body_end`**: Mean `0.753` | 7.1% failure rate (*Recommended baseline tracking target*)
