@@ -21,7 +21,7 @@ import os
 import re
 from scipy import stats
 
-print('=== GROUP MOVEMENT ANALYSIS WITH TRACKING EFFICIENCY ===')
+print('group movement analysis with tracking efficiency')
 
 # Experimental design from your CSV
 EXPERIMENT_DESIGN = {
@@ -270,7 +270,7 @@ def analyze_group_movement_with_tracking(csv_file):
                         break
             
             if x_coords is None or y_coords is None or likelihood is None:
-                print(f'      ❌ Could not find complete tracking data for {animal}')
+                print(f'      Could not find complete tracking data for {animal}')
                 continue
             
             # Convert to numeric
@@ -284,10 +284,10 @@ def analyze_group_movement_with_tracking(csv_file):
             animal_results[animal] = movement_data
             
             if movement_data and movement_data['error'] is None:
-                print(f'      ✅ {animal}: {movement_data[\"tracking_efficiency\"]:.1f}% efficiency, {movement_data[\"mean_speed_cm_s\"]:.2f} cm/s')
-                print(f'      📊 Quality: {movement_data[\"tracking_quality\"]}, Segments: {movement_data[\"num_segments\"]}')
+                print(f'      {animal}: {movement_data[\"tracking_efficiency\"]:.1f}% efficiency, {movement_data[\"mean_speed_cm_s\"]:.2f} cm/s')
+                print(f'      Quality: {movement_data[\"tracking_quality\"]}, Segments: {movement_data[\"num_segments\"]}')
             else:
-                print(f'      ⚠️ {animal}: {movement_data.get(\"error\", \"Analysis failed\")}')
+                print(f'      {animal}: {movement_data.get(\"error\", \"failed\")}')
         
         return animal_results
     
@@ -314,9 +314,9 @@ for csv_file in csv_files:
     
     if date and date in EXPERIMENT_DESIGN:
         exp_info = EXPERIMENT_DESIGN[date]
-        print(f'  ✅ Matched with experiment: {date} - {exp_info[\"type\"]}')
+        print(f'  Matched with experiment: {date} - {exp_info[\"type\"]}')
     else:
-        print(f'  ⚠️ Could not match with experimental design')
+        print(f'   Could not match with experimental design')
         batch_match = re.search(r'[Bb]atch[_\s]*(\d+)', video_name)
         if batch_match:
             batch_num = int(batch_match.group(1))
@@ -324,7 +324,7 @@ for csv_file in csv_files:
                 if info['batch'] == batch_num:
                     date = d
                     exp_info = info
-                    print(f'  ✅ Matched via batch {batch_num}: {date} - {exp_info[\"type\"]}')
+                    print(f'   Matched via batch {batch_num}: {date} - {exp_info[\"type\"]}')
                     break
             else:
                 exp_info = {'batch': 'unknown', 'type': 'unknown', 'left': 'unknown', 'right': 'unknown'}
@@ -348,7 +348,7 @@ for csv_file in csv_files:
             }
             all_movement_results.append(result)
     else:
-        print(f'  ❌ Analysis failed for {video_name}')
+        print(f'    failed for {video_name}')
         result = {
             'video': video_name,
             'date': date,
@@ -369,15 +369,15 @@ if all_movement_results:
     
     successful_moves = len(move_df[move_df['error'].isna()])
     
-    print(f'\\n🎉 MOVEMENT ANALYSIS WITH TRACKING COMPLETE!')
-    print(f'✅ Saved to: {move_output}')
-    print(f'✅ Total animals: {len(move_df)}')
-    print(f'✅ Successful: {successful_moves}/{len(move_df)}')
+    print(f'\\job done!')
+    print(f'Saved to: {move_output}')
+    print(f'Total animals: {len(move_df)}')
+    print(f'Successful: {successful_moves}/{len(move_df)}')
     
     # Summary statistics
     if successful_moves > 0:
         successful_data = move_df[move_df['error'].isna()]
-        print(f'\\n📊 TRACKING EFFICIENCY SUMMARY:')
+        print(f'\\nTRACKING EFFICIENCY SUMMARY:')
         print(f'   Average tracking efficiency: {successful_data[\"tracking_efficiency\"].mean():.1f}%')
         print(f'   Average likelihood: {successful_data[\"avg_likelihood\"].mean():.3f}')
         print(f'   Tracking quality distribution:')
@@ -385,7 +385,7 @@ if all_movement_results:
         for quality, count in quality_counts.items():
             print(f'     {quality}: {count} animals ({count/len(successful_data)*100:.1f}%)')
         
-        print(f'\\n📊 MOVEMENT SUMMARY:')
+        print(f'\\n MOVEMENT SUMMARY:')
         print(f'   Average speed: {successful_data[\"mean_speed_cm_s\"].mean():.2f} cm/s')
         print(f'   Average distance: {successful_data[\"total_distance_cm\"].mean():.1f} cm')
         print(f'   Average straightness: {successful_data[\"straightness_index\"].mean():.3f}')
@@ -395,7 +395,7 @@ if all_movement_results:
         print(f'   Key tracking columns: tracking_efficiency, avg_likelihood, tracking_quality, avg_segment_length')
         print(f'   Key movement columns: mean_speed_cm_s, total_distance_cm, straightness_index, activity_ratio')
 else:
-    print('\\n❌ No movement results generated')
+    print('\\n could not generate movement results')
 
-print(f'\\n✅ Analysis complete! Ready for merging with shelter preference data.')
+print(f'\\n Analysis complete! Ready for merging with shelter preference data.')
 "
