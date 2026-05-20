@@ -20,11 +20,11 @@ import glob
 import os
 from scipy import stats
 
-print('=== COMPREHENSIVE MOVEMENT ANALYSIS (ALL FRAMES) ===')
+print('Comprehensive movement analysis (all frames)')
 
 # Constants for speed calculation
-FPS = 2.0  # frames per second
-PIXELS_PER_CM = 28.0  # You may need to calibrate this for your setup
+FPS = 2.0  # frames per second <adjust according to your setup>
+PIXELS_PER_CM = 28.0  #adjust according to your setup
 TOTAL_VIDEO_LENGTH = 600.5  # seconds
 
 # Shelter definitions
@@ -121,7 +121,7 @@ def analyze_video_comprehensive(csv_file):
             x_coords = df[x_col].values
             y_coords = df[y_col].values
         
-        # ===== ZONE PREFERENCE ANALYSIS =====
+        # preference for zones
         total_frames = len(x_coords)
         frame_duration = 1.0 / FPS
         
@@ -166,7 +166,7 @@ def analyze_video_comprehensive(csv_file):
             'tracking_point': 'body_end' if body_end_cols else 'thorax_midpoint'
         }
         
-        # ===== MOVEMENT ANALYSIS =====
+        # movement analysis
         movement_results = calculate_movement_metrics(x_coords, y_coords)
         
         if movement_results:
@@ -265,10 +265,10 @@ for idx, row in exp_data.iterrows():
         files = glob.glob(broader_search, recursive=True)
         if files:
             csv_file = files[0]
-            print(f'  ✅ Found via broader search: {os.path.basename(csv_file)}')
+            print(f'  Found via broader search: {os.path.basename(csv_file)}')
     
     if not csv_file:
-        print(f'  ❌ CSV file not found')
+        print(f'  CSV file not found')
         # Create empty results for failed analyses
         pref_result = {
             'date': row['date'], 'group': row['group'], 'cockroach_id': row['cockroach_id'],
@@ -287,7 +287,7 @@ for idx, row in exp_data.iterrows():
             'error': 'CSV file not found'
         }
     else:
-        print(f'  ✅ Found: {csv_file}')
+        print(f'   Found: {csv_file}')
         zone_pref, movement_data = analyze_video_comprehensive(csv_file)
         
         if zone_pref:
@@ -317,7 +317,7 @@ for idx, row in exp_data.iterrows():
                 'tracking_point': zone_pref['tracking_point'],
                 'error': None
             }
-            print(f'  ✅ Preferred {preferred_zone} (stimulus: {preferred_stimulus})')
+            print(f'   Preferred {preferred_zone} (stimulus: {preferred_stimulus})')
             
             if movement_data:
                 move_result = {
@@ -327,7 +327,7 @@ for idx, row in exp_data.iterrows():
                     **movement_data,
                     'error': None
                 }
-                print(f'  ✅ Movement: {movement_data[\"mean_speed_cm_s\"]:.2f} cm/s mean speed')
+                print(f'   Movement: {movement_data[\"mean_speed_cm_s\"]:.2f} cm/s mean speed')
             else:
                 move_result = {
                     'date': row['date'], 'group': row['group'], 'cockroach_id': row['cockroach_id'],
@@ -348,7 +348,7 @@ for idx, row in exp_data.iterrows():
                 'left_stimulus': row['left_stimulus'], 'right_stimulus': row['right_stimulus'],
                 'error': 'Analysis failed'
             }
-            print(f'  ❌ Analysis failed')
+            print(f'   Analysis failed')
     
     preference_results.append(pref_result)
     movement_results.append(move_result)
@@ -366,16 +366,16 @@ move_df.to_csv(move_output, index=False)
 successful_pref = len(pref_df[pref_df['error'].isna()])
 successful_move = len(move_df[move_df['error'].isna()])
 
-print(f'\\n✅ ANALYSIS COMPLETE!')
-print(f'✅ Shelter preference saved to: {pref_output}')
-print(f'✅ Movement analysis saved to: {move_output}')
-print(f'✅ Successful preferences: {successful_pref}/{len(pref_df)}')
-print(f'✅ Successful movement: {successful_move}/{len(move_df)}')
+print(f'\\n ANALYSIS COMPLETE!')
+print(f' Shelter preference saved to: {pref_output}')
+print(f' Movement analysis saved to: {move_output}')
+print(f' Successful preferences: {successful_pref}/{len(pref_df)}')
+print(f' Successful movement: {successful_move}/{len(move_df)}')
 
 # Print summary statistics
 if successful_move > 0:
     successful_moves = move_df[move_df['error'].isna()]
-    print(f'\\n📊 MOVEMENT SUMMARY:')
+    print(f'\\n MOVEMENT SUMMARY:')
     print(f'   Mean speed: {successful_moves[\"mean_speed_cm_s\"].mean():.2f} ± {successful_moves[\"mean_speed_cm_s\"].std():.2f} cm/s')
     print(f'   Max speed: {successful_moves[\"max_speed_cm_s\"].mean():.2f} ± {successful_moves[\"max_speed_cm_s\"].std():.2f} cm/s')
     print(f'   Total distance: {successful_moves[\"total_distance_cm\"].mean():.1f} ± {successful_moves[\"total_distance_cm\"].std():.1f} cm')
