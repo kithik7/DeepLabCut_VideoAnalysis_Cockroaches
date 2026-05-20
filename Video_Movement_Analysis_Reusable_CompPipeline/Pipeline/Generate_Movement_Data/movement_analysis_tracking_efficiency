@@ -21,13 +21,13 @@ import seaborn as sns
 from scipy import stats
 import os
 
-print('=== GENERATING MOVEMENT PLOTS WITH TRACKING EFFICIENCY ===')
+
 
 # Set style
 plt.style.use('default')
 sns.set_palette('colorblind')
 
-# Try to load the comprehensive tracking efficiency data first, then movement-only
+# load the comprehensive tracking efficiency data first, then movement-only
 try:
     df = pd.read_csv('comprehensive_analysis_tracking_efficiency.csv')
     print('Loaded: comprehensive_analysis_tracking_efficiency.csv')
@@ -68,16 +68,13 @@ if 'left_stimulus' in data.columns:
         lambda row: get_odor_pair_type(row['left_stimulus'], row['right_stimulus']), axis=1
     )
 else:
-    # If no stimulus data, create a dummy variable
+    # If no stimulus data, create var named unknown
     data['odor_pair_type'] = 'Unknown'
 
 print(f'Available columns: {list(data.columns)}')
 
-# =============================================================================
-# 1. TRACKING QUALITY ASSESSMENT PLOTS
-# =============================================================================
+#tracking quality assessment plots
 
-print('Creating tracking quality assessment plots...')
 
 fig, axes = plt.subplots(2, 3, figsize=(18, 12))
 fig.suptitle('Tracking Quality Assessment Across Experiments', fontsize=16, fontweight='bold')
@@ -92,7 +89,7 @@ if 'tracking_efficiency' in data.columns:
     axes[0,0].legend()
     axes[0,0].grid(True, alpha=0.3)
 
-# 1B. Tracking efficiency by odor pair type
+#Tracking efficiency by odor pair type
 if 'tracking_efficiency' in data.columns and 'odor_pair_type' in data.columns:
     sns.boxplot(data=data, x='odor_pair_type', y='tracking_efficiency', ax=axes[0,1])
     axes[0,1].set_title('B. Tracking Efficiency by Odor Type')
@@ -100,7 +97,7 @@ if 'tracking_efficiency' in data.columns and 'odor_pair_type' in data.columns:
     axes[0,1].set_ylabel('Tracking Efficiency')
     axes[0,1].tick_params(axis='x', rotation=45)
 
-# 1C. Average segment length
+#Average segment length
 if 'avg_segment_length' in data.columns:
     axes[0,2].hist(data['avg_segment_length'], bins=20, alpha=0.7, color='lightgreen', edgecolor='black')
     axes[0,2].axvline(data['avg_segment_length'].mean(), color='red', linestyle='--', label=f'Mean: {data[\"avg_segment_length\"].mean():.1f}')
@@ -110,13 +107,13 @@ if 'avg_segment_length' in data.columns:
     axes[0,2].legend()
     axes[0,2].grid(True, alpha=0.3)
 
-# 1D. Tracking quality categories
+# Tracking quality categories
 if 'tracking_quality' in data.columns:
     quality_counts = data['tracking_quality'].value_counts()
     axes[1,0].pie(quality_counts.values, labels=quality_counts.index, autopct='%1.1f%%', startangle=90)
     axes[1,0].set_title('D. Tracking Quality Distribution')
 
-# 1E. Valid vs total frames
+#Valid vs total frames
 if 'valid_frames' in data.columns and 'total_frames' in data.columns:
     axes[1,1].scatter(data['total_frames'], data['valid_frames'], alpha=0.6)
     max_frames = max(data['total_frames'].max(), data['valid_frames'].max())
@@ -127,7 +124,7 @@ if 'valid_frames' in data.columns and 'total_frames' in data.columns:
     axes[1,1].legend()
     axes[1,1].grid(True, alpha=0.3)
 
-# 1F. Speed vs tracking efficiency
+#Speed vs tracking efficiency
 if 'mean_speed_cm_s' in data.columns and 'tracking_efficiency' in data.columns:
     axes[1,2].scatter(data['tracking_efficiency'], data['mean_speed_cm_s'], alpha=0.6)
     axes[1,2].set_xlabel('Tracking Efficiency')
@@ -151,11 +148,11 @@ plt.savefig('tracking_quality_assessment.png', dpi=300, bbox_inches='tight')
 plt.savefig('tracking_quality_assessment.pdf', bbox_inches='tight')
 plt.close()
 
-# =============================================================================
-# 2. MOVEMENT METRICS WITH TRACKING QUALITY FILTER
-# =============================================================================
 
-print('Creating movement metrics plots with tracking quality...')
+# movement parameters with tracking efficiency threshold
+
+
+
 
 # Filter by tracking quality if available
 if 'tracking_quality' in data.columns:
@@ -168,7 +165,7 @@ else:
 fig, axes = plt.subplots(2, 3, figsize=(18, 12))
 fig.suptitle('Movement Patterns (High Tracking Quality)', fontsize=16, fontweight='bold')
 
-# 2A. Mean speed by odor type
+#Mean speed by odor type
 if 'mean_speed_cm_s' in high_quality_data.columns and 'odor_pair_type' in high_quality_data.columns:
     sns.boxplot(data=high_quality_data, x='odor_pair_type', y='mean_speed_cm_s', ax=axes[0,0])
     axes[0,0].set_title('A. Mean Speed by Odor Type')
@@ -176,7 +173,7 @@ if 'mean_speed_cm_s' in high_quality_data.columns and 'odor_pair_type' in high_q
     axes[0,0].set_ylabel('Mean Speed (cm/s)')
     axes[0,0].tick_params(axis='x', rotation=45)
 
-# 2B. Total distance by odor type
+#Total distance by odor type
 if 'total_distance_cm' in high_quality_data.columns and 'odor_pair_type' in high_quality_data.columns:
     sns.boxplot(data=high_quality_data, x='odor_pair_type', y='total_distance_cm', ax=axes[0,1])
     axes[0,1].set_title('B. Total Distance by Odor Type')
@@ -184,7 +181,7 @@ if 'total_distance_cm' in high_quality_data.columns and 'odor_pair_type' in high
     axes[0,1].set_ylabel('Total Distance (cm)')
     axes[0,1].tick_params(axis='x', rotation=45)
 
-# 2C. Straightness by odor type
+#Straightness by odor type
 if 'straightness_index' in high_quality_data.columns and 'odor_pair_type' in high_quality_data.columns:
     sns.boxplot(data=high_quality_data, x='odor_pair_type', y='straightness_index', ax=axes[0,2])
     axes[0,2].set_title('C. Movement Straightness by Odor Type')
@@ -192,7 +189,7 @@ if 'straightness_index' in high_quality_data.columns and 'odor_pair_type' in hig
     axes[0,2].set_ylabel('Straightness Index')
     axes[0,2].tick_params(axis='x', rotation=45)
 
-# 2D. Max speed by odor type
+#Max speed by odor type
 if 'max_speed_cm_s' in high_quality_data.columns and 'odor_pair_type' in high_quality_data.columns:
     sns.boxplot(data=high_quality_data, x='odor_pair_type', y='max_speed_cm_s', ax=axes[1,0])
     axes[1,0].set_title('D. Maximum Speed by Odor Type')
@@ -200,7 +197,7 @@ if 'max_speed_cm_s' in high_quality_data.columns and 'odor_pair_type' in high_qu
     axes[1,0].set_ylabel('Max Speed (cm/s)')
     axes[1,0].tick_params(axis='x', rotation=45)
 
-# 2E. Net displacement by odor type
+#Net displacement by odor type
 if 'net_displacement_cm' in high_quality_data.columns and 'odor_pair_type' in high_quality_data.columns:
     sns.boxplot(data=high_quality_data, x='odor_pair_type', y='net_displacement_cm', ax=axes[1,1])
     axes[1,1].set_title('E. Net Displacement by Odor Type')
@@ -208,7 +205,7 @@ if 'net_displacement_cm' in high_quality_data.columns and 'odor_pair_type' in hi
     axes[1,1].set_ylabel('Net Displacement (cm)')
     axes[1,1].tick_params(axis='x', rotation=45)
 
-# 2F. Activity ratio by odor type
+#Activity ratio by odor type
 if 'activity_ratio' in high_quality_data.columns and 'odor_pair_type' in high_quality_data.columns:
     sns.boxplot(data=high_quality_data, x='odor_pair_type', y='activity_ratio', ax=axes[1,2])
     axes[1,2].set_title('F. Activity Ratio by Odor Type')
@@ -227,18 +224,15 @@ plt.savefig('movement_high_quality.png', dpi=300, bbox_inches='tight')
 plt.savefig('movement_high_quality.pdf', bbox_inches='tight')
 plt.close()
 
-# =============================================================================
-# 3. TRACKING QUALITY EFFECTS ON MOVEMENT MEASUREMENTS
-# =============================================================================
+#TE effect on mov data 
 
-print('Creating tracking quality effects plots...')
 
 if 'tracking_efficiency' in data.columns:
 
     fig, axes = plt.subplots(2, 3, figsize=(18, 12))
     fig.suptitle('Effects of Tracking Quality on Movement Measurements', fontsize=16, fontweight='bold')
 
-    # 3A. Speed vs tracking efficiency by odor type
+    Speed vs tracking efficiency by odor type
     if 'mean_speed_cm_s' in data.columns and 'odor_pair_type' in data.columns:
         sns.scatterplot(data=data, x='tracking_efficiency', y='mean_speed_cm_s', 
                        hue='odor_pair_type', s=60, ax=axes[0,0])
@@ -247,7 +241,7 @@ if 'tracking_efficiency' in data.columns:
         axes[0,0].set_title('A. Speed vs Tracking Efficiency')
         axes[0,0].grid(True, alpha=0.3)
 
-    # 3B. Straightness vs tracking efficiency
+    #Straightness vs tracking efficiency
     if 'straightness_index' in data.columns:
         sns.scatterplot(data=data, x='tracking_efficiency', y='straightness_index', 
                        hue='odor_pair_type', s=60, ax=axes[0,1])
@@ -256,7 +250,7 @@ if 'tracking_efficiency' in data.columns:
         axes[0,1].set_title('B. Straightness vs Tracking Efficiency')
         axes[0,1].grid(True, alpha=0.3)
 
-    # 3C. Distance vs tracking efficiency
+    #Distance vs tracking efficiency
     if 'total_distance_cm' in data.columns:
         sns.scatterplot(data=data, x='tracking_efficiency', y='total_distance_cm', 
                        hue='odor_pair_type', s=60, ax=axes[0,2])
@@ -265,7 +259,7 @@ if 'tracking_efficiency' in data.columns:
         axes[0,2].set_title('C. Distance vs Tracking Efficiency')
         axes[0,2].grid(True, alpha=0.3)
 
-    # 3D. Movement metrics comparison: High vs Low quality
+    #Movement metrics comparison: High vs Low quality
     if 'tracking_quality' in data.columns:
         quality_metrics = ['mean_speed_cm_s', 'straightness_index', 'total_distance_cm']
         available_metrics = [m for m in quality_metrics if m in data.columns]
@@ -280,7 +274,7 @@ if 'tracking_efficiency' in data.columns:
                 axes[1,0].tick_params(axis='x', rotation=45)
                 axes[1,0].legend(bbox_to_anchor=(1.05, 1), loc='upper left')
 
-    # 3E. Segment length vs movement metrics
+    #Segment length vs movement metrics
     if 'avg_segment_length' in data.columns and 'mean_speed_cm_s' in data.columns:
         sns.scatterplot(data=data, x='avg_segment_length', y='mean_speed_cm_s', 
                        hue='tracking_quality' if 'tracking_quality' in data.columns else None, 
@@ -290,7 +284,7 @@ if 'tracking_efficiency' in data.columns:
         axes[1,1].set_title('E. Tracking Continuity vs Speed')
         axes[1,1].grid(True, alpha=0.3)
 
-    # 3F. Valid frames histogram by quality
+    #Valid frames histogram by quality
     if 'valid_frames' in data.columns and 'tracking_quality' in data.columns:
         for quality in data['tracking_quality'].unique():
             subset = data[data['tracking_quality'] == quality]
@@ -301,7 +295,7 @@ if 'tracking_efficiency' in data.columns:
         axes[1,2].legend()
         axes[1,2].grid(True, alpha=0.3)
 
-    # Hide empty subplots
+#Hide empty subplots
     for i in range(2):
         for j in range(3):
             if not axes[i,j].has_data():
@@ -312,11 +306,8 @@ if 'tracking_efficiency' in data.columns:
     plt.savefig('tracking_quality_effects.pdf', bbox_inches='tight')
     plt.close()
 
-# =============================================================================
-# 4. STATISTICAL SUMMARY WITH TRACKING QUALITY
-# =============================================================================
 
-print('Generating statistical summary with tracking quality...')
+# 4. STATISTICAL SUMMARY WITH TRACKING QUALITY
 
 # Create comprehensive summary
 summary_data = []
@@ -330,7 +321,7 @@ if 'tracking_quality' in data.columns:
         'straightness_index': ['mean', 'std'] if 'straightness_index' in data.columns else []
     }).round(3)
     
-    print('SUMMARY BY TRACKING QUALITY:')
+    print('TE summary')
     print(quality_summary)
 
 # Summary by odor pair type with tracking efficiency
@@ -342,12 +333,10 @@ if 'odor_pair_type' in data.columns:
         'straightness_index': ['mean', 'std'] if 'straightness_index' in data.columns else []
     }).round(3)
     
-    print('\\nSUMMARY BY ODOR PAIR TYPE:')
+    print('\\nsummary by odor pair:')
     print(odor_summary)
     
-    # Save summary to CSV
-    odor_summary.to_csv('movement_tracking_summary.csv')
-    print('Summary statistics saved to: movement_tracking_summary.csv')
+   
 
 # Key correlations including tracking efficiency
 correlations = {}
@@ -364,11 +353,6 @@ if correlations:
     for name, corr in correlations.items():
         print(f'   {name}: {corr:.3f}')
 
-print(f'\\nPLOTTING COMPLETE!')
-print(f'Generated tracking efficiency movement analysis plots:')
-print(f'   1. tracking_quality_assessment.png - Overall tracking quality assessment')
-print(f'   2. movement_high_quality.png - Movement patterns (high quality data only)')
-print(f'   3. tracking_quality_effects.png - Effects of tracking quality on measurements')
-print(f'   4. movement_tracking_summary.csv - Statistical summary')
-print(f'Ready for interpretation!')
-"
+print(f'\\njob done')
+
+
