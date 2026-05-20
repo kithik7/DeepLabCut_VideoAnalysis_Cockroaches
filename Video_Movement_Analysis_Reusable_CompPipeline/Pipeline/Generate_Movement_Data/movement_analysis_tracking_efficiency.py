@@ -21,7 +21,7 @@ import seaborn as sns
 from scipy import stats
 import os
 
-print('=== GENERATING MOVEMENT PLOTS WITH TRACKING EFFICIENCY ===')
+print('movement analysis plots with tracking efficiency')
 
 # Set style
 plt.style.use('default')
@@ -73,11 +73,9 @@ else:
 
 print(f'Available columns: {list(data.columns)}')
 
-# =============================================================================
-# 1. TRACKING QUALITY ASSESSMENT PLOTS
-# =============================================================================
+#tracking Quality assessment plots
 
-print('Creating tracking quality assessment plots...')
+print('Creating tracking quality assessment plots..')
 
 fig, axes = plt.subplots(2, 3, figsize=(18, 12))
 fig.suptitle('Tracking Quality Assessment Across Experiments', fontsize=16, fontweight='bold')
@@ -127,7 +125,7 @@ if 'valid_frames' in data.columns and 'total_frames' in data.columns:
     axes[1,1].legend()
     axes[1,1].grid(True, alpha=0.3)
 
-# 1F. Speed vs tracking efficiency
+# Speed vs tracking efficiency
 if 'mean_speed_cm_s' in data.columns and 'tracking_efficiency' in data.columns:
     axes[1,2].scatter(data['tracking_efficiency'], data['mean_speed_cm_s'], alpha=0.6)
     axes[1,2].set_xlabel('Tracking Efficiency')
@@ -151,9 +149,8 @@ plt.savefig('tracking_quality_assessment.png', dpi=300, bbox_inches='tight')
 plt.savefig('tracking_quality_assessment.pdf', bbox_inches='tight')
 plt.close()
 
-# =============================================================================
-# 2. MOVEMENT METRICS WITH TRACKING QUALITY FILTER
-# =============================================================================
+
+#  Movement metrics with tracking quality threshold
 
 print('Creating movement metrics plots with tracking quality...')
 
@@ -168,7 +165,7 @@ else:
 fig, axes = plt.subplots(2, 3, figsize=(18, 12))
 fig.suptitle('Movement Patterns (High Tracking Quality)', fontsize=16, fontweight='bold')
 
-# 2A. Mean speed by odor type
+#Mean speed by odor type
 if 'mean_speed_cm_s' in high_quality_data.columns and 'odor_pair_type' in high_quality_data.columns:
     sns.boxplot(data=high_quality_data, x='odor_pair_type', y='mean_speed_cm_s', ax=axes[0,0])
     axes[0,0].set_title('A. Mean Speed by Odor Type')
@@ -176,7 +173,7 @@ if 'mean_speed_cm_s' in high_quality_data.columns and 'odor_pair_type' in high_q
     axes[0,0].set_ylabel('Mean Speed (cm/s)')
     axes[0,0].tick_params(axis='x', rotation=45)
 
-# 2B. Total distance by odor type
+#Total distance by odor type
 if 'total_distance_cm' in high_quality_data.columns and 'odor_pair_type' in high_quality_data.columns:
     sns.boxplot(data=high_quality_data, x='odor_pair_type', y='total_distance_cm', ax=axes[0,1])
     axes[0,1].set_title('B. Total Distance by Odor Type')
@@ -184,7 +181,7 @@ if 'total_distance_cm' in high_quality_data.columns and 'odor_pair_type' in high
     axes[0,1].set_ylabel('Total Distance (cm)')
     axes[0,1].tick_params(axis='x', rotation=45)
 
-# 2C. Straightness by odor type
+#Straightness by odor type
 if 'straightness_index' in high_quality_data.columns and 'odor_pair_type' in high_quality_data.columns:
     sns.boxplot(data=high_quality_data, x='odor_pair_type', y='straightness_index', ax=axes[0,2])
     axes[0,2].set_title('C. Movement Straightness by Odor Type')
@@ -192,7 +189,7 @@ if 'straightness_index' in high_quality_data.columns and 'odor_pair_type' in hig
     axes[0,2].set_ylabel('Straightness Index')
     axes[0,2].tick_params(axis='x', rotation=45)
 
-# 2D. Max speed by odor type
+#Max speed by odor type
 if 'max_speed_cm_s' in high_quality_data.columns and 'odor_pair_type' in high_quality_data.columns:
     sns.boxplot(data=high_quality_data, x='odor_pair_type', y='max_speed_cm_s', ax=axes[1,0])
     axes[1,0].set_title('D. Maximum Speed by Odor Type')
@@ -200,7 +197,7 @@ if 'max_speed_cm_s' in high_quality_data.columns and 'odor_pair_type' in high_qu
     axes[1,0].set_ylabel('Max Speed (cm/s)')
     axes[1,0].tick_params(axis='x', rotation=45)
 
-# 2E. Net displacement by odor type
+#Net displacement by odor type
 if 'net_displacement_cm' in high_quality_data.columns and 'odor_pair_type' in high_quality_data.columns:
     sns.boxplot(data=high_quality_data, x='odor_pair_type', y='net_displacement_cm', ax=axes[1,1])
     axes[1,1].set_title('E. Net Displacement by Odor Type')
@@ -208,7 +205,7 @@ if 'net_displacement_cm' in high_quality_data.columns and 'odor_pair_type' in hi
     axes[1,1].set_ylabel('Net Displacement (cm)')
     axes[1,1].tick_params(axis='x', rotation=45)
 
-# 2F. Activity ratio by odor type
+#Activity ratio by odor type
 if 'activity_ratio' in high_quality_data.columns and 'odor_pair_type' in high_quality_data.columns:
     sns.boxplot(data=high_quality_data, x='odor_pair_type', y='activity_ratio', ax=axes[1,2])
     axes[1,2].set_title('F. Activity Ratio by Odor Type')
@@ -216,7 +213,7 @@ if 'activity_ratio' in high_quality_data.columns and 'odor_pair_type' in high_qu
     axes[1,2].set_ylabel('Activity Ratio')
     axes[1,2].tick_params(axis='x', rotation=45)
 
-# Hide empty subplots
+#Hide empty subplots
 for i in range(2):
     for j in range(3):
         if not axes[i,j].has_data():
@@ -227,10 +224,8 @@ plt.savefig('movement_high_quality.png', dpi=300, bbox_inches='tight')
 plt.savefig('movement_high_quality.pdf', bbox_inches='tight')
 plt.close()
 
-# =============================================================================
-# 3. TRACKING QUALITY EFFECTS ON MOVEMENT MEASUREMENTS
-# =============================================================================
-
+#Tracking quality effects on movement 
+                                                                                                      
 print('Creating tracking quality effects plots...')
 
 if 'tracking_efficiency' in data.columns:
@@ -247,7 +242,7 @@ if 'tracking_efficiency' in data.columns:
         axes[0,0].set_title('A. Speed vs Tracking Efficiency')
         axes[0,0].grid(True, alpha=0.3)
 
-    # 3B. Straightness vs tracking efficiency
+    #Straightness vs tracking efficiency
     if 'straightness_index' in data.columns:
         sns.scatterplot(data=data, x='tracking_efficiency', y='straightness_index', 
                        hue='odor_pair_type', s=60, ax=axes[0,1])
@@ -256,7 +251,7 @@ if 'tracking_efficiency' in data.columns:
         axes[0,1].set_title('B. Straightness vs Tracking Efficiency')
         axes[0,1].grid(True, alpha=0.3)
 
-    # 3C. Distance vs tracking efficiency
+    #Distance vs tracking efficiency
     if 'total_distance_cm' in data.columns:
         sns.scatterplot(data=data, x='tracking_efficiency', y='total_distance_cm', 
                        hue='odor_pair_type', s=60, ax=axes[0,2])
@@ -265,7 +260,7 @@ if 'tracking_efficiency' in data.columns:
         axes[0,2].set_title('C. Distance vs Tracking Efficiency')
         axes[0,2].grid(True, alpha=0.3)
 
-    # 3D. Movement metrics comparison: High vs Low quality
+    #Movement metrics comparison: High vs Low quality
     if 'tracking_quality' in data.columns:
         quality_metrics = ['mean_speed_cm_s', 'straightness_index', 'total_distance_cm']
         available_metrics = [m for m in quality_metrics if m in data.columns]
@@ -345,9 +340,6 @@ if 'odor_pair_type' in data.columns:
     print('\\nSUMMARY BY ODOR PAIR TYPE:')
     print(odor_summary)
     
-    # Save summary to CSV
-    odor_summary.to_csv('movement_tracking_summary.csv')
-    print('Summary statistics saved to: movement_tracking_summary.csv')
 
 # Key correlations including tracking efficiency
 correlations = {}
@@ -366,9 +358,7 @@ if correlations:
 
 print(f'\\nPLOTTING COMPLETE!')
 print(f'Generated tracking efficiency movement analysis plots:')
-print(f'   1. tracking_quality_assessment.png - Overall tracking quality assessment')
-print(f'   2. movement_high_quality.png - Movement patterns (high quality data only)')
+print(f'   1. tracking_quality_assessment.png)
+print(f'   2. movement_high_quality.png - Movement patterns(with TE)')
 print(f'   3. tracking_quality_effects.png - Effects of tracking quality on measurements')
-print(f'   4. movement_tracking_summary.csv - Statistical summary')
-print(f'Ready for interpretation!')
-"
+
