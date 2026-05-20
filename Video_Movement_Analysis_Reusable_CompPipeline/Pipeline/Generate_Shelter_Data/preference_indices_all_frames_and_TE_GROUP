@@ -201,47 +201,6 @@ combined_df.to_csv('preference_index_combined_group.csv', index=False)
 
 
 
-
-#summarize quickly
-
-summary_data = []
-for dataset_name in combined_df['dataset'].unique():
-    dataset_subset = combined_df[combined_df['dataset'] == dataset_name]
-    
-    for odor_type in ['Iso vs Nothing', 'Feces vs Nothing', 'Iso vs Feces']:
-        subset = dataset_subset[dataset_subset['odor_pair_type'] == odor_type]
-        if len(subset) > 0:
-            summary_row = {
-                'dataset': dataset_name,
-                'odor_combination': odor_type,
-                'n_individuals': len(subset),
-                'mean_pref_index_time': subset['pref_index_time'].mean(),
-                'std_pref_index_time': subset['pref_index_time'].std(),
-                'mean_pref_strength': subset['pref_strength'].mean(),
-                'std_pref_strength': subset['pref_strength'].std(),
-                'mean_shelter_vs_open': subset['pref_index_shelter_vs_open'].mean(),
-                'std_shelter_vs_open': subset['pref_index_shelter_vs_open'].std(),
-            }
-            
-            # Add odor-specific preferences where applicable
-            if odor_type in ['Iso vs Nothing', 'Iso vs Feces']:
-                summary_row['mean_pref_index_iso'] = subset['pref_index_iso'].mean()
-                summary_row['std_pref_index_iso'] = subset['pref_index_iso'].std()
-            
-            if odor_type in ['Feces vs Nothing', 'Iso vs Feces']:
-                summary_row['mean_pref_index_feces'] = subset['pref_index_feces'].mean()
-                summary_row['std_pref_index_feces'] = subset['pref_index_feces'].std()
-            
-            if odor_type in ['Iso vs Nothing', 'Feces vs Nothing']:
-                summary_row['mean_pref_index_odor'] = subset['pref_index_odor'].mean()
-                summary_row['std_pref_index_odor'] = subset['pref_index_odor'].std()
-            
-            summary_data.append(summary_row)
-
-summary_df = pd.DataFrame(summary_data)
-
-
-
 print(f'\\n Job Done')
 
 "
