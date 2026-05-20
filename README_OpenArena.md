@@ -37,7 +37,8 @@ The paths for in the config.yaml files are for the AGM-NAS cluster (nawrot lab),
   * [Pipeline/imp_notes.txt](Pipeline/imp_notes.txt)
     Important pointers and reference notes regarding tmux usage and cluster environments.
 
-
+  * Pipeline/Generate_Shelter_Data/ Subfolder containing scripts to make data frames with time spent under            shelter parameters.
+    
   * [Pipeline/Generate_Movement_Data/](Pipeline/Generate_Movement_Data/)
     Subfolder containing scripts to extract tracking datasets.
 
