@@ -148,7 +148,7 @@ pref_columns = [
 pref_df = df[pref_columns].copy()
 
 # Save to CSV
-pref_df.to_csv('preference_indices_only.csv', index=False)
+pref_df.to_csv('preference_indices_solo.csv', index=False)
 
 
 print(f'\\n Job done')
