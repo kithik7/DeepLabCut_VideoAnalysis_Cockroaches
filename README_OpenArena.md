@@ -154,8 +154,8 @@ The arena is divided into an X-shaped configuration based on angular thresholds 
 ### DeepLabCut PyTorch & Cluster Troubleshooting
 
 #### 1. Out of Memory / Large Video File Frame Analysis Failures
-* **Issue**: Error when processing large inference sequences exceeding 300,000 frames using legacy TensorFlow backends.
-* **Resolution**: Force DeepLabCut engine execution within PyTorch native deployment wrappers. Pure TensorFlow allocations fail to scale over long frame periods. Reference engine verification context via [DeepLabCut Issue #2644](https://github.com).
+* **Issue**: Error when processing large datasets exceeding 300,000 frames using Tensorflow backend even with all the dependencies.
+* **Resolution**: Force DeepLabCut engine execution within PyTorch. TensorFlow training does not work anymore. Reference issue : via [DeepLabCut Issue #2644](https://github.com).
 * Always train on Cluster with GPU! 
 * DLC models - pytorch works, the other dlc models folder is invalid 
 * dlc changed to pytorch from tensor flow and the dlc models folder is an empty folder, thence. 
