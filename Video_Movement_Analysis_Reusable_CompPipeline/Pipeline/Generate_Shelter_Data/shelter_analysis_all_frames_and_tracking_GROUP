@@ -20,9 +20,8 @@ import glob
 import os
 import re
 
-print('=== GROUP SHELTER PREFERENCE ANALYSIS FIXED ===')
 
-# Experimental design from your CSV - FIXED DATES
+# Experimental design from Dataframe - hardcoded because its swapped
 EXPERIMENT_DESIGN = {
     '2025-08-20': {'batch': 2, 'type': 'Iso/Nothing', 'left': 'Iso', 'right': 'Nothing'},
     '2025-08-21': {'batch': 1, 'type': 'Iso/Nothing', 'left': 'Iso', 'right': 'Nothing'},
@@ -36,7 +35,7 @@ EXPERIMENT_DESIGN = {
     '2025-08-31': {'batch': 10, 'type': 'Feces/Nothing', 'left': 'Feces', 'right': 'Nothing'}
 }
 
-# Shelter definitions - ADJUSTED COORDINATES (these might need tuning)
+# Shelter definitions - ADJUSTED COORDINATES (these might need to be adjusted according to setup)
 ZONES = {
     'left_shelter': {'x_range': (403, 639), 'y_range': (537, 711)},
     'right_shelter': {'x_range': (1195, 1449), 'y_range': (509, 677)}
@@ -96,14 +95,13 @@ def analyze_multi_animal_video(csv_file, fps=2.0, total_video_length=600.5):
         print(f'    Found {len(individuals)} animals: {list(individuals)}')
         
         if not individuals:
-            print('    ❌ No animals found in this file')
+            print('    No animals found in this file')
             return None
         
         # Analyze each animal
         animal_results = {}
         
-        for animal in individuals:
-            print(f'    Analyzing {animal}...')
+       
             
             # Find body_end coordinates
             x_coords = None
@@ -124,7 +122,7 @@ def analyze_multi_animal_video(csv_file, fps=2.0, total_video_length=600.5):
                             break
             
             if x_coords is None or y_coords is None:
-                print(f'      ❌ Could not find body_end coordinates for {animal}')
+                print(f'       Could not find body_end coordinates for {animal}')
                 continue
             
             # Convert to numeric
@@ -186,7 +184,7 @@ def analyze_multi_animal_video(csv_file, fps=2.0, total_video_length=600.5):
                 'zone_frame_counts': zone_frame_counts
             }
             
-            print(f'      ✅ {animal}: Left: {percent_left:.1f}%, Right: {percent_right:.1f}%, Open: {percent_open:.1f}%')
+            print(f'       {animal}: Left: {percent_left:.1f}%, Right: {percent_right:.1f}%, Open: {percent_open:.1f}%')
             print(f'      Frames in zones - Left: {zone_frame_counts[\"left_shelter\"]}, Right: {zone_frame_counts[\"right_shelter\"]}')
         
         return animal_results
@@ -214,10 +212,10 @@ for csv_file in csv_files:
     
     if date and date in EXPERIMENT_DESIGN:
         exp_info = EXPERIMENT_DESIGN[date]
-        print(f'  ✅ Matched with experiment: {date} - {exp_info[\"type\"]}')
+        print(f'   Matched with experiment: {date} - {exp_info[\"type\"]}')
         print(f'  Left shelter: {exp_info[\"left\"]}, Right shelter: {exp_info[\"right\"]}')
     else:
-        print(f'  ⚠️ Could not match with experimental design for: {video_name}')
+        print(f'   Could not match with experimental design for: {video_name}')
         # Try to extract batch from filename as fallback
         batch_match = re.search(r'[Bb]atch[_\s]*(\d+)', video_name)
         if batch_match:
@@ -226,7 +224,7 @@ for csv_file in csv_files:
                 if info['batch'] == batch_num:
                     date = d
                     exp_info = info
-                    print(f'  ✅ Matched via batch {batch_num}: {date} - {exp_info[\"type\"]}')
+                    print(f'   Matched via batch {batch_num}: {date} - {exp_info[\"type\"]}')
                     break
             else:
                 exp_info = {'batch': 'unknown', 'type': 'unknown', 'left': 'unknown', 'right': 'unknown'}
@@ -272,7 +270,7 @@ for csv_file in csv_files:
             }
             all_results.append(result)
     else:
-        print(f'  ❌ Analysis failed for {video_name}')
+        print(f'   Analysis failed for {video_name}')
         result = {
             'video': video_name,
             'date': date,
@@ -307,40 +305,26 @@ if all_results:
     successful = len(results_df[results_df['error'].isna()])
     total_animals = len(results_df)
     
-    print(f'\\n🎉 GROUP ANALYSIS COMPLETE!')
-    print(f'✅ Saved to: {output_file}')
-    print(f'✅ Total animals analyzed: {total_animals}')
-    print(f'✅ Successful: {successful}/{total_animals}')
-    
+    print(f'\\n Job Done')
+    print(f' Saved to: {output_file}')
+    print(f' Total animals analyzed: {total_animals}')
+  
     # Check if animals are actually in shelters
     total_frames_in_shelters = results_df['frames_left_shelter'].sum() + results_df['frames_right_shelter'].sum()
     total_possible_frames = results_df['total_frames'].sum()
     shelter_occupancy_rate = (total_frames_in_shelters / total_possible_frames) * 100 if total_possible_frames > 0 else 0
     
-    print(f'\\n📊 SHELTER OCCUPANCY CHECK:')
+    print(f'\\n shelter occupancy prelim :')
     print(f'  Total frames in shelters: {total_frames_in_shelters:,}')
     print(f'  Total possible frames: {total_possible_frames:,}')
     print(f'  Shelter occupancy rate: {shelter_occupancy_rate:.2f}%')
     
     if shelter_occupancy_rate < 1.0:
-        print(f'  ⚠️ VERY LOW SHELTER OCCUPANCY - CHECK ZONE COORDINATES!')
+        print(f'   VERY LOW SHELTER OCCUPANCY - CHECK ZONE COORDINATES!')
         print(f'  Current zone coordinates:')
         for zone, coords in ZONES.items():
             print(f'    {zone}: X{coords[\"x_range\"]}, Y{coords[\"y_range\"]}')
     
-    # Summary by experiment type
-    print(f'\\n📊 SUMMARY BY EXPERIMENT TYPE:')
-    for exp_type in results_df['experiment_type'].unique():
-        if exp_type != 'unknown':
-            exp_data = results_df[results_df['experiment_type'] == exp_type]
-            successful_exp = exp_data[exp_data['error'].isna()]
-            
-            if len(successful_exp) > 0:
-                print(f'\\n  {exp_type}:')
-                print(f'    Animals preferring Iso: {len(successful_exp[successful_exp[\"preferred_odor\"] == \"Iso\"])}')
-                print(f'    Animals preferring Feces: {len(successful_exp[successful_exp[\"preferred_odor\"] == \"Feces\"])}')
-                print(f'    Animals preferring Nothing: {len(successful_exp[successful_exp[\"preferred_odor\"] == \"Nothing\"])}')
-                print(f'    Animals in open area: {len(successful_exp[successful_exp[\"preferred_odor\"] == \"open_area\"])}')
-else:
-    print('\\n❌ No results generated')
+  
+    print('\\n No results generated, recheck code above, please dont forget how to type')
 "
