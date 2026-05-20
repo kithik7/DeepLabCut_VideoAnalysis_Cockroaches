@@ -137,12 +137,12 @@ The arena is divided into an X-shaped configuration based on angular thresholds 
 
 
 #### Video Frame Parameters
-* **Framerate:** `2.0 FPS`
+* **Frame rate:** `2.0 FPS`
 * **Target Run Duration:** `600.50 seconds` (10.01 minutes)
 * **Standard Frame Allocation:** `1201 frames` is verified as accurate (`100.08%` ratio)
 
 #### Tracking Bodypart Likelihood Profile (DLC ResNet50)
-* **Confidence Threshold Constraint:** `0.6` (Frames below threshold reduce Total Valid Time)
+* **Confidence/ Likelihood Threshold :** `0.6` (Frames below threshold reduce Total Valid Time)
 * **`body_end`**: Mean `0.753` | 7.1% failure rate (*Recommended baseline tracking target*)
 * **`left_antennae_tip`**: Mean `0.304` | 100.0% tracking failure rate (*Do not utilize*)
 * **`right_antennae_tip`**: Mean `0.361` | 99.9% tracking failure rate (*Do not utilize*)
@@ -151,9 +151,13 @@ The arena is divided into an X-shaped configuration based on angular thresholds 
 
 ### DeepLabCut PyTorch & Cluster Troubleshooting
 
-#### 1. Out of Memory (OOM) / Large Video File Frame Analysis Failures
+#### 1. Out of Memory / Large Video File Frame Analysis Failures
 * **Issue**: Error when processing large inference sequences exceeding 300,000 frames using legacy TensorFlow backends.
 * **Resolution**: Force DeepLabCut engine execution within PyTorch native deployment wrappers. Pure TensorFlow allocations fail to scale over long frame periods. Reference engine verification context via [DeepLabCut Issue #2644](https://github.com).
+* Always train on Cluster with GPU! 
+* DLC models - pytorch works, the other dlc models folder is invalid 
+* dlc changed to pytorch from tensor flow and the dlc models folder is an empty folder, thence. 
+
 
 #### 2. Tracking Quality Drop & Decreased "Total Valid Time"
 * **Issue**: The script calculates a `Total Valid Time` lower than your standard video window duration of `600.5 seconds`.
