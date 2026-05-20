@@ -81,7 +81,7 @@ conda activate /rhomes/kkesavan/miniforge3/envs/dlc_pytorch_gpu
 /rhomes/kkesavan/miniforge3/envs/DEEPLABCUT/bin/python
 ```
 
-#### Persistent Session Management
+#### Tmux attach
 ```bash
 # Attach to active terminal multiplexer session
 cd dlcv_project
