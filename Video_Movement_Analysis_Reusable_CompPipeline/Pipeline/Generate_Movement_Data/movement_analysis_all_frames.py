@@ -366,7 +366,7 @@ move_df.to_csv(move_output, index=False)
 successful_pref = len(pref_df[pref_df['error'].isna()])
 successful_move = len(move_df[move_df['error'].isna()])
 
-print(f'\\n ANALYSIS COMPLETE!')
+print(f'\\n job done!')
 print(f' Shelter preference saved to: {pref_output}')
 print(f' Movement analysis saved to: {move_output}')
 print(f' Successful preferences: {successful_pref}/{len(pref_df)}')
@@ -375,7 +375,7 @@ print(f' Successful movement: {successful_move}/{len(move_df)}')
 # Print summary statistics
 if successful_move > 0:
     successful_moves = move_df[move_df['error'].isna()]
-    print(f'\\n MOVEMENT SUMMARY:')
+    print(f'\\n mov summary:')
     print(f'   Mean speed: {successful_moves[\"mean_speed_cm_s\"].mean():.2f} ± {successful_moves[\"mean_speed_cm_s\"].std():.2f} cm/s')
     print(f'   Max speed: {successful_moves[\"max_speed_cm_s\"].mean():.2f} ± {successful_moves[\"max_speed_cm_s\"].std():.2f} cm/s')
     print(f'   Total distance: {successful_moves[\"total_distance_cm\"].mean():.1f} ± {successful_moves[\"total_distance_cm\"].std():.1f} cm')
