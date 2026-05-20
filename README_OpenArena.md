@@ -67,7 +67,7 @@ The paths for in the config.yaml files are for the AGM-NAS cluster (nawrot lab),
 
 ### Server Reference & Cluster Execution
 
-#### Environment Initializatio
+#### Environment Initialization
 ```bash
 # Load module infrastructure and activate environment
 module load python3/anaconda3
@@ -75,7 +75,7 @@ source /rhomes/kkesavan/miniforge3/etc/profile.d/conda.sh
 conda activate /rhomes/kkesavan/miniforge3/envs/dlc_pytorch_gpu
 ```
 
-#### Executable Binary Path
+#### Path - cluster
 ```text
 /rhomes/kkesavan/miniforge3/envs/DEEPLABCUT/bin/python
 ```
