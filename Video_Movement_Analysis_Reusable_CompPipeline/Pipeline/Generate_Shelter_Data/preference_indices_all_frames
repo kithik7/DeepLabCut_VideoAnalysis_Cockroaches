@@ -22,9 +22,9 @@ from scipy import stats
 import warnings
 warnings.filterwarnings('ignore')
 
-print('=== PREFERENCE INDICES CSV GENERATION ===')
 
-# Set muted color palette
+
+# Set muted color palette with hex codes
 muted_palette = ['#4C72B0', '#DD8452', '#55A868', '#C44E52', '#8172B3', '#937860', '#DA8BC3', '#8C8C8C']
 sns.set_palette(muted_palette)
 plt.style.use('seaborn-v0_8-whitegrid')
@@ -47,13 +47,9 @@ df['odor_pair_type'] = df.apply(
                'Feces vs Nothing' if ('Feces' in [row['left_stimulus'], row['right_stimulus']] and 
                                      'Nothing' in [row['left_stimulus'], row['right_stimulus']]) else 'Other', axis=1)
 
-# =============================================================================
-# CALCULATE PREFERENCE INDICES (NO BINARY INDEX)
-# =============================================================================
 
-print('\\n📊 CALCULATING PREFERENCE INDICES (excluding binary index)...')
 
-# 1. TIME-BASED PREFERENCE INDEX (Continuous, -1 to +1)
+# 1. time based pref index (Continuous, -1 to +1)
 def calculate_time_preference(row):
     \"\"\"-1 = All time in right, +1 = All time in left, 0 = Equal time\"\"\"
     total_shelter_time = row['time_left_shelter'] + row['time_right_shelter']
@@ -64,7 +60,7 @@ def calculate_time_preference(row):
 
 df['pref_index_time'] = df.apply(calculate_time_preference, axis=1)
 
-# 2. ODOR PREFERENCE INDEX (For odor vs nothing comparisons)
+# 2. odor pref index (For odor vs nothing comparisons)
 def calculate_odor_preference(row):
     \"\"\"-1 = Prefer Nothing, +1 = Prefer Odor, 0 = No preference\"\"\"
     if row['odor_pair_type'] in ['Iso vs Nothing', 'Feces vs Nothing']:
@@ -86,10 +82,10 @@ def calculate_odor_preference(row):
 
 df['pref_index_odor'] = df.apply(calculate_odor_preference, axis=1)
 
-# 3. RELATIVE PREFERENCE STRENGTH (0 to 1)
+# 3.relative pref strength
 df['pref_strength'] = df['pref_index_time'].abs()
 
-# 4. SHELTER VS OPEN PREFERENCE (-1 to +1)
+# 4. shelter vs open area pref (-1 to +1)
 def calculate_shelter_preference(row):
     \"\"\"-1 = Prefer open area, +1 = Prefer shelters, 0 = Equal\"\"\"
     total_time = row['time_left_shelter'] + row['time_right_shelter'] + row['time_open_area']
@@ -101,7 +97,7 @@ def calculate_shelter_preference(row):
 
 df['pref_index_shelter_vs_open'] = df.apply(calculate_shelter_preference, axis=1)
 
-# 5. ODOR-SPECIFIC PREFERENCE INDICES
+# 5. odor specific pref indices
 def calculate_iso_preference(row):
     \"\"\"Preference for Iso specifically (-1 to +1)\"\"\"
     if 'Iso' in [row['left_stimulus'], row['right_stimulus']]:
@@ -135,19 +131,8 @@ def calculate_feces_preference(row):
 df['pref_index_iso'] = df.apply(calculate_iso_preference, axis=1)
 df['pref_index_feces'] = df.apply(calculate_feces_preference, axis=1)
 
-print('✅ Calculated preference indices:')
-print('   - pref_index_time: General shelter preference (-1 to +1)')
-print('   - pref_index_odor: Odor vs Nothing preference (-1 to +1)')
-print('   - pref_strength: Decision confidence (0 to 1)')
-print('   - pref_index_shelter_vs_open: Shelter vs Open preference (-1 to +1)')
-print('   - pref_index_iso: Specific Iso preference (-1 to +1)')
-print('   - pref_index_feces: Specific Feces preference (-1 to +1)')
 
-# =============================================================================
-# CREATE SEPARATE PREFERENCE INDICES CSV
-# =============================================================================
-
-print('\\n💾 CREATING SEPARATE PREFERENCE INDICES CSV...')
+#create separate pref indices csv
 
 # Select only the essential columns + preference indices
 pref_columns = [
@@ -165,178 +150,7 @@ pref_df = df[pref_columns].copy()
 # Save to CSV
 pref_df.to_csv('preference_indices_only.csv', index=False)
 
-# =============================================================================
-# CREATE SUMMARY STATISTICS CSV
-# =============================================================================
 
-print('\\n📊 CREATING SUMMARY STATISTICS...')
+print(f'\\n Job done')
 
-summary_data = []
-for odor_type in ['Iso vs Nothing', 'Feces vs Nothing', 'Iso vs Feces']:
-    subset = pref_df[pref_df['odor_pair_type'] == odor_type]
-    if len(subset) > 0:
-        summary_row = {
-            'odor_combination': odor_type,
-            'n_individuals': len(subset),
-            'mean_pref_index_time': subset['pref_index_time'].mean(),
-            'std_pref_index_time': subset['pref_index_time'].std(),
-            'mean_pref_strength': subset['pref_strength'].mean(),
-            'std_pref_strength': subset['pref_strength'].std(),
-            'mean_shelter_vs_open': subset['pref_index_shelter_vs_open'].mean(),
-            'std_shelter_vs_open': subset['pref_index_shelter_vs_open'].std(),
-        }
-        
-        # Add odor-specific preferences where applicable
-        if odor_type in ['Iso vs Nothing', 'Iso vs Feces']:
-            summary_row['mean_pref_index_iso'] = subset['pref_index_iso'].mean()
-            summary_row['std_pref_index_iso'] = subset['pref_index_iso'].std()
-        
-        if odor_type in ['Feces vs Nothing', 'Iso vs Feces']:
-            summary_row['mean_pref_index_feces'] = subset['pref_index_feces'].mean()
-            summary_row['std_pref_index_feces'] = subset['pref_index_feces'].std()
-        
-        if odor_type in ['Iso vs Nothing', 'Feces vs Nothing']:
-            summary_row['mean_pref_index_odor'] = subset['pref_index_odor'].mean()
-            summary_row['std_pref_index_odor'] = subset['pref_index_odor'].std()
-        
-        summary_data.append(summary_row)
 
-summary_df = pd.DataFrame(summary_data)
-summary_df.to_csv('preference_indices_summary.csv', index=False)
-
-# =============================================================================
-# CREATE CLEAN VISUALIZATION
-# =============================================================================
-
-print('\\n📈 CREATING CLEAN PREFERENCE INDEX VISUALIZATION...')
-
-fig, axes = plt.subplots(2, 2, figsize=(15, 10))
-fig.suptitle('Preference Index Analysis (Continuous Indices Only)', fontsize=16, fontweight='bold')
-
-# Plot 1: Time-based preference index
-ax1 = axes[0, 0]
-for i, odor_type in enumerate(['Iso vs Nothing', 'Feces vs Nothing', 'Iso vs Feces']):
-    subset = pref_df[pref_df['odor_pair_type'] == odor_type]
-    if len(subset) > 0:
-        color = muted_palette[i]
-        
-        # Calculate mean and CI
-        mean_pref = subset['pref_index_time'].mean()
-        sem = subset['pref_index_time'].sem()
-        ci = 1.96 * sem
-        
-        # Bar with error bars
-        ax1.bar(i, mean_pref, yerr=ci, color=color, alpha=0.7, 
-               capsize=5, label=odor_type, edgecolor='black', linewidth=0.5)
-        
-        # Individual points with jitter
-        x_jitter = np.random.normal(i, 0.1, len(subset))
-        ax1.scatter(x_jitter, subset['pref_index_time'], 
-                   color=color, alpha=0.6, s=40)
-
-ax1.axhline(y=0, color='red', linestyle='--', alpha=0.7, label='No preference')
-ax1.set_title('A. Shelter Preference Index', fontweight='bold')
-ax1.set_ylabel('Preference Index\\n(-1 = Right, +1 = Left)')
-ax1.set_xlabel('Odor Combination')
-ax1.set_xticks(range(3))
-ax1.set_xticklabels(['Iso vs\\nNothing', 'Feces vs\\nNothing', 'Iso vs\\nFeces'])
-ax1.set_ylim(-1, 1)
-ax1.legend()
-ax1.grid(True, alpha=0.3, axis='y')
-
-# Plot 2: Preference strength
-ax2 = axes[0, 1]
-for i, odor_type in enumerate(['Iso vs Nothing', 'Feces vs Nothing', 'Iso vs Feces']):
-    subset = pref_df[pref_df['odor_pair_type'] == odor_type]
-    if len(subset) > 0:
-        color = muted_palette[i]
-        sns.violinplot(data=subset, x='odor_pair_type', y='pref_strength', 
-                      ax=ax2, color=color, alpha=0.7, inner='quartile')
-
-ax2.set_title('B. Decision Confidence', fontweight='bold')
-ax2.set_ylabel('Preference Strength\\n(0 = Indifferent, 1 = Strong)')
-ax2.set_xlabel('Odor Combination')
-ax2.set_xticklabels(['Iso vs\\nNothing', 'Feces vs\\nNothing', 'Iso vs\\nFeces'])
-ax2.set_ylim(0, 1)
-ax2.grid(True, alpha=0.3, axis='y')
-
-# Plot 3: Odor-specific preferences
-ax3 = axes[1, 0]
-odor_data = []
-for odor_type in ['Iso vs Nothing', 'Feces vs Nothing']:
-    subset = pref_df[pref_df['odor_pair_type'] == odor_type]
-    if len(subset) > 0:
-        odor = 'Iso' if 'Iso' in odor_type else 'Feces'
-        for _, row in subset.iterrows():
-            odor_data.append({
-                'Odor': odor,
-                'Preference': row['pref_index_odor']
-            })
-odor_df = pd.DataFrame(odor_data)
-
-if len(odor_df) > 0:
-    sns.boxplot(data=odor_df, x='Odor', y='Preference', ax=ax3, 
-               palette=[muted_palette[0], muted_palette[1]])
-    ax3.axhline(y=0, color='red', linestyle='--', alpha=0.7, label='No preference')
-    ax3.set_title('C. Odor vs Nothing Preference', fontweight='bold')
-    ax3.set_ylabel('Preference Index\\n(-1 = Nothing, +1 = Odor)')
-    ax3.set_ylim(-1, 1)
-    ax3.legend()
-    ax3.grid(True, alpha=0.3, axis='y')
-
-# Plot 4: Shelter vs Open preference
-ax4 = axes[1, 1]
-for i, odor_type in enumerate(['Iso vs Nothing', 'Feces vs Nothing', 'Iso vs Feces']):
-    subset = pref_df[pref_df['odor_pair_type'] == odor_type]
-    if len(subset) > 0:
-        color = muted_palette[i]
-        
-        mean_pref = subset['pref_index_shelter_vs_open'].mean()
-        sem = subset['pref_index_shelter_vs_open'].sem()
-        ci = 1.96 * sem
-        
-        ax4.bar(i, mean_pref, yerr=ci, color=color, alpha=0.7, 
-               capsize=5, label=odor_type, edgecolor='black', linewidth=0.5)
-
-ax4.axhline(y=0, color='red', linestyle='--', alpha=0.7, label='Equal preference')
-ax4.set_title('D. Shelter vs Open Area Preference', fontweight='bold')
-ax4.set_ylabel('Preference Index\\n(-1 = Open, +1 = Shelter)')
-ax4.set_xlabel('Odor Combination')
-ax4.set_xticks(range(3))
-ax4.set_xticklabels(['Iso vs\\nNothing', 'Feces vs\\nNothing', 'Iso vs\\nFeces'])
-ax4.set_ylim(-1, 1)
-ax4.legend()
-ax4.grid(True, alpha=0.3, axis='y')
-
-plt.tight_layout()
-plt.savefig('preference_indices_clean.png', dpi=300, bbox_inches='tight')
-plt.savefig('preference_indices_clean.pdf', bbox_inches='tight')
-plt.close()
-
-# =============================================================================
-# PRINT KEY INSIGHTS
-# =============================================================================
-
-print('\\n🔍 KEY INSIGHTS FROM PREFERENCE INDICES:')
-for odor_type in ['Iso vs Nothing', 'Feces vs Nothing', 'Iso vs Feces']:
-    subset = pref_df[pref_df['odor_pair_type'] == odor_type]
-    if len(subset) > 0:
-        mean_pref = subset['pref_index_time'].mean()
-        strength = subset['pref_strength'].mean()
-        shelter_pref = subset['pref_index_shelter_vs_open'].mean()
-        
-        direction = 'left' if mean_pref > 0.1 else 'right' if mean_pref < -0.1 else 'no clear'
-        confidence = 'strong' if strength > 0.6 else 'moderate' if strength > 0.3 else 'weak'
-        shelter_bias = 'shelters' if shelter_pref > 0.3 else 'open area' if shelter_pref < -0.3 else 'balanced'
-        
-        print(f'\\n{odor_type}:')
-        print(f'  → Preference: {direction} preference (index: {mean_pref:.3f})')
-        print(f'  → Confidence: {confidence} decisions (strength: {strength:.3f})')
-        print(f'  → Location: Prefer {shelter_bias} (index: {shelter_pref:.3f})')
-
-print(f'\\n✅ ANALYSIS COMPLETE!')
-print(f'✅ Generated: preference_indices_only.csv (clean dataset)')
-print(f'✅ Generated: preference_indices_summary.csv (statistics)')
-print(f'✅ Generated: preference_indices_clean.png/pdf (visualization)')
-print(f'\\n📁 Your preference indices are ready for analysis in jamovi or any statistical software!')
-"
