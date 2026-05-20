@@ -104,6 +104,40 @@ tmux attach -t 1
 | **Right Arena Border** | 42,672 | 158.546 | 1195 | 509 | 254 | 168 |
 | **Central Open Area** | 1,442,392 | 147.010 | 357 | 1 | 1204 | 1198 |
 
+### Locomotion Analysis
+
+Locomotion parameters were calculated by converting the pixel coordinates into centimeters using the pixel-to-cm conversion value (0.032413). The parameters that were evaluated are mathematically and operationally tabulated below:
+
+
+| Metric Name | Formula | Units | Description |
+| :--- | :--- | :--- | :--- |
+| **Total Frames** | $N$ | frames | Number of frames in video |
+| **Total Time** | $\frac{N}{\text{fps}}$ | seconds | Duration of video |
+| **Total Distance** | $\sum_{i=1}^{N-1} \sqrt{(\Delta x_i)^2 + (\Delta y_i)^2}$ | cm | Cumulative path length traveled |
+| **Mean Speed** | $\frac{1}{N-1} \sum_{i=1}^{N-1} \frac{\sqrt{(\Delta x_i)^2 + (\Delta y_i)^2}}{\text{frame duration}}$ | cm/s | Speed averaged over all frames |
+| **Max Speed** | $\max \left( \frac{\sqrt{(\Delta x_i)^2 + (\Delta y_i)^2}}{\text{frame duration}} \right)$ | cm/s | Maximum instantaneous frame-to-frame speed |
+| **Net Displacement** | $\sqrt{(x_{\text{final}} - x_{\text{initial}})^2 + (y_{\text{final}} - y_{\text{initial}})^2}$ | cm | Straight-line distance start to end |
+| **Straightness Index** | $\frac{\text{net displacement}}{\text{total distance}}$ | ratio | Path efficiency (0–1); higher is straighter |
+
+### Arena Quadrant Division
+
+The arena is divided into an X-shaped configuration based on angular thresholds calculated from the central coordinate $(X_{\text{center}}, Y_{\text{center}})$. 
+
+
+| Quadrant | Angular Range | Description |
+| :--- | :--- | :--- |
+| **TOP** | $45^\circ < \theta \leq 135^\circ$ | Upper quadrant section |
+| **LEFT** | $135^\circ < \theta \leq 225^\circ$ | Left quadrant section |
+| **BOTTOM** | $225^\circ < \theta \leq 315^\circ$ | Lower quadrant section |
+| **RIGHT** | $315^\circ < \theta \leq 45^\circ$ (or $\geq 0^\circ \cup \leq 45^\circ$) | Right quadrant section |
+
+*Key Parameters:*
+* **Arena Diameter:** $59\text{ cm}$
+* **Origin Point:** $\text{Center } (X_{\text{center}}, Y_{\text{center}})$
+
+
+
+
 ***
 
 
