@@ -1,8 +1,8 @@
-# DeepLabCut_VideoAnalysis_Cockroaches
+## DeepLabCut_VideoAnalysis_Cockroaches
 markdown file and some scripts that can be reused for video analysis with deeplab cut. the pipeline requires one to label videos on the GUI, upload the directory on the cluster, train the model on the cluster, run analyze videos and generate trajectory plots as well coordinate csvs. Post this, for just cockroach data, theres mov_analysis scripts
 #DLC video analysis pipeline 
 
-# Movement Analysis PM1 - Project Documentation 
+### Movement Analysis PM1 - Project Documentation 
 The paths for in the config.yaml files are for the AGM-NAS cluster (nawrot lab), the folders specifically have local paths for the linux desktop in the same lab. This is subject to change of course relative to the project and my computational apparatus. 
 
 
