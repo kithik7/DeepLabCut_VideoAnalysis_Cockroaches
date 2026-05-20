@@ -19,7 +19,7 @@ import numpy as np
 import glob
 import os
 
-print('=== SHELTER PREFERENCE ANALYSIS (SHELTERS ONLY) ===')
+
 
 # Only shelter definitions - open area is everything else
 ZONES = {
@@ -167,7 +167,7 @@ for idx, row in exp_data.iterrows():
             break
     
     if not csv_file:
-        print(f'  ❌ CSV file not found for pattern: {csv_pattern}')
+        print(f'   CSV file not found for pattern: {csv_pattern}')
         # Try broader search with just the base name
         base_name = video_name.replace('DLC_Resnet50_single_k7Sep2shuffle1_snapshot_020.h5', '')\
                               .replace('DLC_Resnet50_single_k7Sep2shuffle1_snapshot_best-110.h5', '')
@@ -175,10 +175,10 @@ for idx, row in exp_data.iterrows():
         files = glob.glob(broader_search, recursive=True)
         if files:
             csv_file = files[0]
-            print(f'  ✅ Found via broader search: {os.path.basename(csv_file)}')
+            print(f'  Found via broader search: {os.path.basename(csv_file)}')
     
     if not csv_file:
-        print(f'  ❌ CSV file not found')
+        print(f'  CSV file not found')
         result = {
             'date': row['date'],
             'group': row['group'],
@@ -202,7 +202,7 @@ for idx, row in exp_data.iterrows():
             'error': 'CSV file not found'
         }
     else:
-        print(f'  ✅ Found: {csv_file}')
+        print(f'  Found: {csv_file}')
         analysis = analyze_video_zone_preference(csv_file, fps=2.0)
         
         if analysis:
@@ -237,9 +237,9 @@ for idx, row in exp_data.iterrows():
                 'tracking_point': analysis['tracking_point'],
                 'error': None
             }
-            print(f'  ✅ Preferred {preferred_zone} (stimulus: {preferred_stimulus})')
-            print(f'  ✅ Tracking: {analysis[\"total_valid_frames\"]}/{analysis[\"total_frames\"]} frames ({analysis[\"total_valid_time\"]:.1f}s valid)')
-            print(f'  ✅ Times - Left: {analysis[\"time_left_shelter\"]:.1f}s, Right: {analysis[\"time_right_shelter\"]:.1f}s, Open: {analysis[\"time_open_area\"]:.1f}s')
+            print(f'  Preferred {preferred_zone} (stimulus: {preferred_stimulus})')
+            print(f'  Tracking: {analysis[\"total_valid_frames\"]}/{analysis[\"total_frames\"]} frames ({analysis[\"total_valid_time\"]:.1f}s valid)')
+            print(f'  Times - Left: {analysis[\"time_left_shelter\"]:.1f}s, Right: {analysis[\"time_right_shelter\"]:.1f}s, Open: {analysis[\"time_open_area\"]:.1f}s')
         else:
             result = {
                 'date': row['date'],
@@ -263,7 +263,7 @@ for idx, row in exp_data.iterrows():
                 'tracking_point': None,
                 'error': 'Analysis failed'
             }
-            print(f'  ❌ Analysis failed')
+            print(f'   Analysis failed')
     
     results.append(result)
 
@@ -273,8 +273,7 @@ output_file = 'shelter_preference_analysis_corrected.csv'
 results_df.to_csv(output_file, index=False)
 
 successful = len(results_df[results_df['error'].isna()])
-print(f'\\n✅ ANALYSIS COMPLETE!')
-print(f'✅ Saved to: {output_file}')
-print(f'✅ Successful: {successful}/{len(results_df)}')
-print(f'✅ Failed: {len(results_df) - successful}/{len(results_df)}')
+print(f'\\n Job Done')
+print(f' Saved to: {output_file}')
+
 "
