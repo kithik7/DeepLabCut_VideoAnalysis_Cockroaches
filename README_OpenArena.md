@@ -162,14 +162,14 @@ The arena is divided into an X-shaped configuration based on angular thresholds 
 
 
 #### 2. Tracking Quality Drop & Decreased "Total Valid Time"
-* **Issue**: The script calculates a `Total Valid Time` lower than your standard video window duration of `600.5 seconds`.
-* **Resolution**: Verify your confidence filtering configuration thresholds. If data frames possess an evaluation likelihood score lower than `< 0.6`, they drop out of tracking runtime limits. 
+* **Issue**: The script calculates a `Total Valid Time` lower than my standard video duration of `600.5 seconds`.
+* **Solution**: Verify tracking efficiency thresholds. If data frames possess an evaluation likelihood score lower than `< 0.6`, they drop out of the tracking efficiency dataset. But make sure that there is a version that considers frames that do not make the cut.  
 * **Actionable Correction**:
-  * Swap unstable tracking nodes (`left_antennae_tip` at 100% failure rate / `right_antennae_tip` at 99.9% failure rate) out of distance-mapping arrays.
-  * Point your tracking pipeline execution loops exclusively at the stable `body_end` node (Mean `0.753` likelihood with only a `7.1%` threshold failure rate).
+  * Exclude jittery and usntable tracked body points (`left_antennae_tip` at 100% failure rate / `right_antennae_tip` at 99.9% failure rate) for analysis. 
+  * Use a reliable body part with a likelihood score above the threshold. In this case, it was the body end. (Mean `0.753` likelihood with only a `7.1%` threshold failure rate).
 
 #### 3. PyTorch CUDA / GPU Initialization Mismatch on Cluster
-* **Issue**: Python defaults to CPU execution inside tmux or fails to fetch active GPU nodes.
+* **Issue**: Python defaults to CPU execution inside tmux or fails to fetch active GPU spaces.
 * **Resolution**: Always ensure environmental shell variables and paths load accurately, and in proper sequence, prior to execution. Run these explicit module reset lines in Tmux
   ```bash
   module purge
