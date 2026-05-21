@@ -143,13 +143,22 @@ The arena is divided into an X-shaped configuration based on angular thresholds 
 * **Target Run Duration:** `600.50 seconds` (10.01 minutes)
 * **Standard Frame Allocation:** `1201 frames` is verified as accurate (`100.08%` ratio)
 
-#### Tracking Bodypart Likelihood Profile (DLC ResNet50)
-* **Confidence/ Likelihood Threshold :** `0.6` (Frames below threshold reduce Total Valid Time)
-* **`body_end`**: Mean `0.753` | 7.1% failure rate (*Recommended baseline tracking target*)
-* **`left_antennae_tip`**: Mean `0.304` | 100.0% tracking failure rate (*Do not utilize*)
-* **`right_antennae_tip`**: Mean `0.361` | 99.9% tracking failure rate (*Do not utilize*)
+#### Bodypart Likelihood
+* **Confidence/ Likelihood Threshold :** `0.6` (Frames below threshold reduce Total Valid Time)e
 
-***
+
+
+| Body Part | Mean Likelihood | Low Confidence Frames (<0.6) | Percentage (<0.6) |
+| :--- | :---: | :---: | :---: |
+| **body_end** | 0.753 | 85 / 1201 | 7.1% |
+| **left_pmthorax_boundary** | 0.731 | 100 / 1201 | 8.3% |
+| **right_pmthorax_boundary** | 0.724 | 112 / 1201 | 9.3% |
+| **left_antennae_base** | 0.701 | 227 / 1201 | 18.9% |
+| **right_antennae_base** | 0.695 | 271 / 1201 | 22.6% |
+| **right_antennae_tip** | 0.361 | 1200 / 1201 | 99.9% |
+| **left_antennae_tip** | 0.304 | 1201 / 1201 | 100.0% |
+
+
 
 ### DeepLabCut PyTorch & Cluster Troubleshooting
 
@@ -171,12 +180,18 @@ The arena is divided into an X-shaped configuration based on angular thresholds 
 #### 3. PyTorch CUDA / GPU Initialization Mismatch on Cluster
 * **Issue**: Python defaults to CPU execution inside tmux or fails to fetch active GPU spaces.
 * **Resolution**: Always ensure environmental shell variables and paths load accurately, and in proper sequence, prior to execution. Run these explicit module reset lines in Tmux
+*   login to ssh and then navigate to dlcv_project then tmux attach -t 1
   ```bash
   module purge
   module load python3/anaconda3
   source /rhomes/kkesavan/miniforge3/etc/profile.d/conda.sh
   conda activate /rhomes/kkesavan/miniforge3/envs/dlc_pytorch_gpu
   ```
+
+
+
+
+
 
 
 
