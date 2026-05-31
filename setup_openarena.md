@@ -21,7 +21,6 @@ Cluster (agmn-srv-1)
 - torch.cuda.is_available() → True
 - Passwordless SSH exists now
 - Training targets: agmn-srv-3 / agmn-srv-4 (A6000 GPUs) via SLURM
-
 - Cluster access through VScode, separate open arena environment exists installed with Remote SSh
   extension
 
