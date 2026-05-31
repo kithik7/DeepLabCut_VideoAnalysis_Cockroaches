@@ -25,15 +25,15 @@ Cluster (agmn-srv-1)
   extension
 
 How to: 
-####Activate environment for windows
+##### Activate environment for windows
 conda activate DEEPLABCUT
 
-####Activate environment on Cluster
+##### Activate environment on Cluster
 source ~/miniconda3/bin/activate
 conda activate DLC_OpenArena
 
---
-#####Cluster Directory 
+---
+##### Cluster Directory 
 
 /rhomes/kkesavan/
 ├── miniconda3/                          # conda installation (shared across projects)
