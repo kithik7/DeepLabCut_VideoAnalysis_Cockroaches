@@ -25,12 +25,20 @@ Cluster (agmn-srv-1)
   extension
 
 How to: 
-Activate environments
-bash# Windows (VS Code terminal)
+# Activate environment for windows
 conda activate DEEPLABCUT
 
-# Cluster
+# Activate environment on Cluster
 source ~/miniconda3/bin/activate
 conda activate DLC_OpenArena
+
+/rhomes/kkesavan/
+├── miniconda3/                          # conda installation (shared across projects)
+├── Open_Arena_Jun26_Shyness_Boldness/   # current project
+└── DLC_Open_Arena_Aug25_OdourPref/      # archived old project
+    ├── dlc_project/
+    ├── dlc_project_group/
+    └── conda-envs/
+- Old miniforge3 (~30GB) deleted from archive to free disk space
 
 
