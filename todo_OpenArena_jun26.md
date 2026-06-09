@@ -12,3 +12,13 @@
 copy directory to cluster before annotating, config yaml copy.
 2 body parts, blurry, thigmotaxis rim - 5cm, make an arena schematic 
 put down on paper pixel coordinates
+
+
+
+
+
+potential to dos 
+- reanalyze group data with an insect specific pose estimator - side project no hurry
+- find out time spend outside shelter on average from previous open arena experiment
+- make table with pixel coordinates and real cm conversions or rather just pixel coordinates and give conversion rates of shelter, thigmotactic boundary ie 5cm and whole arena
+  
