@@ -92,5 +92,5 @@ The RMSE improvement is notable, the model predicts locations ~0.07px more accur
 
 Inspecting two analyzed and labelled videos with shuffle2 (snapshot-best-190, ResNet50) revealed that:
 
-G3_C05_S1 - many instnaces of shelter occlusion: was accurate
+G3_C05_S1 - many instances of shelter occlusion: was accurate
 G2_C05_S1 — the most heavily labelled video during annotation because it has the most number of occlusion instances, therefore contributes greatly to the training set for the network.  (~1369 labeled occlusion frames). Specifically, this video is chosen because the cockroach is blurry as well and it appears less darker than the other videos in the training dataset. Checking the labeled output confirmed that the model is indeed more accurate now and has gotten better at detecting cases where the animal is heavily occluded under the shelter (due to the focus issue), both body_parts : head and body_end appear to be stable and are correctly predicted even as the animals moves across the shelterl. Time spent outside the shelter is also accurately predicted. Therefore, I have decided to go on with analyzing the whole dataset and then labelling them with snapshot 190 from shuffle 2 on the cluster.
