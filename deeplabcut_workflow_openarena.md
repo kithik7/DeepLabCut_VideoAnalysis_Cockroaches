@@ -57,6 +57,7 @@ network also has same weight initialization for shuffle 2 from the old open aren
 
 training stats: epoch 200 Epoch 200/200 (lr=1e-05), train loss 0.00090, valid loss 0.00119, GPU: 3838.0/45518.2 MiB
 Model performance:
+
   metrics/test.rmse:           2.96
   metrics/test.rmse_pcutoff:   2.96
   metrics/test.mAP:           39.52
@@ -66,6 +67,7 @@ Model performance:
 Running evaluate network step showed snapshot 190 is better
 Evaluation results file: DLC_Resnet50_Open_Arena_Jun26_Shyness_BoldnessJun12shuffle2_snapshot_best-190-results.csv
 Evaluation results for DLC_Resnet50_Open_Arena_Jun26_Shyness_BoldnessJun12shuffle2_snapshot_best-190-results.csv (pcutoff: 0.6):
+
 train rmse             2.68
 train rmse_pcutoff     2.68
 train mAP             44.92
