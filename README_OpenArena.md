@@ -106,6 +106,16 @@ tmux attach -t 1
 | **Right Arena Border** | 42,672 | 158.546 | 1195 | 509 | 254 | 168 |
 | **Central Open Area** | 1,442,392 | 147.010 | 357 | 1 | 1204 | 1198 |
 
+old pixel to cm  
+Arena’s actual Diameter = 59 cms
+Diameter in Pixels = 1724.4672 pixels (average of maximum extent of movement from all videos)
+Cm per pixel = 59/1724.4672 = 0.034213
+Pixels per cm = 1/0.034213 = 29.2283
+Therefore, 
+Center X and Center Y = (1024,1024) 
+<Video resolution : 2048x2048>
+
+
 ***
 Locomotion Analysis
 
