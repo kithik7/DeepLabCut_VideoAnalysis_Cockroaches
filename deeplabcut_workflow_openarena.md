@@ -94,3 +94,52 @@ Inspecting two analyzed and labelled videos with shuffle2 (snapshot-best-190, Re
 
 G3_C05_S1 - many instances of shelter occlusion: was accurate
 G2_C05_S1 — the most heavily labelled video during annotation because it has the most number of occlusion instances, therefore contributes greatly to the training set for the network.  (~1369 labeled occlusion frames). Specifically, this video is chosen because the cockroach is blurry as well and it appears less darker than the other videos in the training dataset. Checking the labeled output confirmed that the model is indeed more accurate now and has gotten better at detecting cases where the animal is heavily occluded under the shelter (due to the focus issue), both body_parts : head and body_end appear to be stable and are correctly predicted even as the animals moves across the shelterl. Time spent outside the shelter is also accurately predicted. Therefore, I have decided to go on with analyzing the whole dataset and then labelling them with snapshot 190 from shuffle 2 on the cluster.
+
+
+Here's the note for your repo, plus the formula breakdown.
+
+---
+
+**Arena/shelter pixel measurements
+
+*Pixel-to-cm calibration*
+
+Arena inner diameter measured via Hough circle detection (OpenCV) on a still frame, cross-validated across 3 videos from different groups/days (G1_C01_S1, G3_C02_S1, G4_C04_S3) to confirm camera stability. Measurements were highly consistent (std dev 0.74px across videos)
+
+    Arena diameter (pixels): 930.27 px (mean across 3 videos)
+    Arena diameter (real): 59 cm
+    Conversion factor: 930.27 / 59 = 15.77 px/cm
+    Inverse: 59 / 930.27 = 0.0634 cm/px
+
+Shelter diameter measured for cross-validation: ~137px detected, converting to ~8.69cm against a stated physical diameter of 8cm 
+
+*Thigmotaxis zone*
+
+5cm band adjacent to the arena wall  measured inward from the arena boundary.
+
+    5 cm × 15.77 px/cm = 78.85 px
+
+So thigmotaxis zone = annular region between radius (465 - 79) = *386px* and *465px* from arena center, where arena center ≈ (499.5, 507) and outer radius ≈ 465px.
+
+From a google search: how the cirular elements got their measurements 
+
+Hough Circle Transform is a computer vision algorithm that detects circular shapes in an image. It works by:
+
+1. Detecting edges in the image (boundaries where pixel brightness changes sharply — like the arena wall against the floor)
+2. For every edge point, it considers all possible circles that could pass through that point at various radii
+3. It accumulates "votes" in a parameter space (center x, center y, radius) — points that are consistent with the same circle vote for the same parameters
+4. The circle with the most votes (the one most consistent with the actual edge pattern) is returned
+
+In OpenCV, the call looks like:
+
+```python
+cv2.HoughCircles(image, method, dp, minDist, param1, param2, minRadius, maxRadius)
+```
+
+- `dp=1`: resolution of the accumulator matches the image resolution
+- `minDist=500`: minimum distance between detected circle centers (prevents detecting near-duplicate circles)
+- `param1=50`: edge detection sensitivity threshold
+- `param2=30`: how many "votes" needed to count as a real circle — lower means more lenient detection
+- `minRadius`/`maxRadius`: search bounds, set based on expected arena/shelter size in pixels
+
+The output gives (x_center, y_center, radius) for the most confident circle found within the constraints.
