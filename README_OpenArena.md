@@ -107,6 +107,7 @@ tmux attach -t 1
 | **Central Open Area** | 1,442,392 | 147.010 | 357 | 1 | 1204 | 1198 |
 
 old pixel to cm  
+
 Arena’s actual Diameter = 59 cms
 Diameter in Pixels = 1724.4672 pixels (average of maximum extent of movement from all videos)
 Cm per pixel = 59/1724.4672 = 0.034213
